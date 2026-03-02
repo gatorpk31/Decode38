@@ -158,11 +158,11 @@ Decode38.UI = {
     });
 
     html += '<div class="nav">';
-    html += '<button class="btn-back" onclick="Decode38.App.goBack()" aria-label="Go back to previous step">\u2190 Back</button>';
+    html += '<button class="btn-back" data-action="go-back" aria-label="Go back to previous step">\u2190 Back</button>';
     if (isLast) {
-      html += '<button class="btn-generate" onclick="Decode38.App.runGenerate()" aria-label="Generate your results">\u2726 Generate My Results</button>';
+      html += '<button class="btn-generate" data-action="run-generate" aria-label="Generate your results">\u2726 Generate My Results</button>';
     } else {
-      html += '<button class="btn-next" onclick="Decode38.App.goNext()" aria-label="Continue to next step">Continue \u2192</button>';
+      html += '<button class="btn-next" data-action="go-next" aria-label="Continue to next step">Continue \u2192</button>';
     }
     html += '</div></div>';
 
@@ -222,7 +222,7 @@ Decode38.UI = {
       '<span>You don\'t have to select everything. Start with the conditions that affect your life most. Service background questions apply to all conditions and come first.</span>' +
       '</div>' +
       '<div class="nav"><div></div>' +
-      '<button class="btn-next" onclick="Decode38.App.beginIntake()" aria-label="Begin intake questionnaire">Begin Intake \u2192</button>' +
+      '<button class="btn-next" data-action="begin-intake" aria-label="Begin intake questionnaire">Begin Intake \u2192</button>' +
       '</div></div>';
 
     return html;
@@ -236,8 +236,8 @@ Decode38.UI = {
       '<p>You can take a break at any time. Your progress is saved automatically.</p>' +
       '<div class="crisis-note">Need support? Call or text <a href="tel:988">988</a> (press 1 for veterans)</div>' +
       '<div class="trigger-warning-actions">' +
-      '<button class="btn-back" onclick="Decode38.App.goBack()">\u2190 Go Back</button>' +
-      '<button class="btn-next" onclick="Decode38.App.dismissTriggerWarning()">Continue \u2192</button>' +
+      '<button class="btn-back" data-action="go-back">\u2190 Go Back</button>' +
+      '<button class="btn-next" data-action="dismiss-trigger">Continue \u2192</button>' +
       '</div></div>';
   },
 
@@ -256,7 +256,7 @@ Decode38.UI = {
       html += '<div class="print-report-bar">' +
         '<div><div class="print-report-bar-title">\uD83D\uDCCB Your Full Decode38 Report</div>' +
         '<div class="print-report-bar-sub">A complete summary of your conditions, estimated ratings, VA language translations, and C&P exam prep.</div></div>' +
-        '<button class="btn-print-report" onclick="Decode38.UI.printReport()">\uD83D\uDDA8\uFE0F Print Full Report</button></div>';
+        '<button class="btn-print-report" data-action="print-report">\uD83D\uDDA8\uFE0F Print Full Report</button></div>';
     }
 
     // Rating Summary Hero
@@ -297,7 +297,7 @@ Decode38.UI = {
     html += '</div>'; // close results-hero
 
     // ── Condition Detail Panel ──────────────────────────────────
-    html += '<div class="panel"><div class="panel-head" onclick="Decode38.UI.togglePanel(this)" role="button" aria-expanded="true" tabindex="0">' +
+    html += '<div class="panel"><div class="panel-head" data-action="toggle-panel" role="button" aria-expanded="true" tabindex="0">' +
       '<div class="panel-title-wrap"><div class="panel-icon pi-blue">\uD83D\uDCCA</div>' +
       '<div><div class="panel-title">Compensation Level by Condition</div>' +
       '<div class="panel-subtitle"><span class="free-tag">Free</span> What the criteria say and what compensation level applies for each condition</div></div></div>' +
@@ -333,7 +333,7 @@ Decode38.UI = {
         return rb.rating - ra.rating;
       });
 
-      html += '<div class="panel"><div class="panel-head" onclick="Decode38.UI.togglePanel(this)" role="button" aria-expanded="false" tabindex="0">' +
+      html += '<div class="panel"><div class="panel-head" data-action="toggle-panel" role="button" aria-expanded="false" tabindex="0">' +
         '<div class="panel-title-wrap"><div class="panel-icon pi-teal">\uD83D\uDD22</div>' +
         '<div><div class="panel-title">How VA Calculates Your Combined Level</div>' +
         '<div class="panel-subtitle">The Whole Person method explained with your numbers</div></div></div>' +
@@ -352,7 +352,7 @@ Decode38.UI = {
     }
 
     // ── Secondary Conditions Panel ──────────────────────────────
-    html += '<div class="panel"><div class="panel-head" onclick="Decode38.UI.togglePanel(this)" role="button" aria-expanded="true" tabindex="0">' +
+    html += '<div class="panel"><div class="panel-head" data-action="toggle-panel" role="button" aria-expanded="true" tabindex="0">' +
       '<div class="panel-title-wrap"><div class="panel-icon pi-green">\uD83D\uDD17</div>' +
       '<div><div class="panel-title">Related Conditions to Consider</div>' +
       '<div class="panel-subtitle">' + secondary.length + ' additional service-connected conditions you may be eligible to claim</div></div></div>' +
@@ -371,7 +371,7 @@ Decode38.UI = {
 
     // ── Translations Panel ──────────────────────────────────────
     if (Decode38.Features.isAvailable('TRANSLATIONS')) {
-      html += '<div class="panel"><div class="panel-head" onclick="Decode38.UI.togglePanel(this)" role="button" aria-expanded="true" tabindex="0">' +
+      html += '<div class="panel"><div class="panel-head" data-action="toggle-panel" role="button" aria-expanded="true" tabindex="0">' +
         '<div class="panel-title-wrap"><div class="panel-icon pi-blue">\uD83D\uDCDD</div>' +
         '<div><div class="panel-title">Your VA Language Translation Guide</div>' +
         '<div class="panel-subtitle">How to say what you experience in the language VA is required to respond to</div></div></div>' +
@@ -389,7 +389,7 @@ Decode38.UI = {
 
     // ── Personal Statement Panel ────────────────────────────────
     if (Decode38.Features.isAvailable('AI_STATEMENT')) {
-      html += '<div class="panel"><div class="panel-head" onclick="Decode38.UI.togglePanel(this)" role="button" aria-expanded="true" tabindex="0">' +
+      html += '<div class="panel"><div class="panel-head" data-action="toggle-panel" role="button" aria-expanded="true" tabindex="0">' +
         '<div class="panel-title-wrap"><div class="panel-icon pi-amber">\uD83D\uDCC4</div>' +
         '<div><div class="panel-title">Personal Statement Draft</div>' +
         '<div class="panel-subtitle">A formal statement in VA regulatory language based on your responses</div></div></div>' +
@@ -398,7 +398,7 @@ Decode38.UI = {
 
       if (statement) {
         html += '<div class="stmt-box" id="stmtText">' + esc(statement) + '</div>' +
-          '<button class="copy-btn" onclick="Decode38.UI.copyEl(\'stmtText\',this)">\uD83D\uDCCB Copy Statement</button>' +
+          '<button class="copy-btn" data-action="copy-el" data-target="stmtText">\uD83D\uDCCB Copy Statement</button>' +
           '<p style="font-size:.74rem;color:var(--text-light);margin-top:.6rem">Review this draft with your VSO before submitting. This is a starting point \u2014 your VSO or claims agent may refine it further.</p>';
       } else {
         html += '<div style="background:var(--cream);border:1px dashed var(--border);border-radius:3px;padding:1.5rem;text-align:center;color:var(--text-light);font-size:.84rem">' +
@@ -413,7 +413,7 @@ Decode38.UI = {
           '<h4 style="font-family:\'Libre Baskerville\',serif;color:var(--navy);margin-bottom:.6rem;font-size:.95rem">Nexus Letter Framework</h4>' +
           '<p style="font-size:.78rem;color:var(--text-mid);margin-bottom:.75rem">Take this framework to your doctor and ask them to complete it on official letterhead. A nexus letter establishes the medical connection between your service and your condition.</p>' +
           '<div class="stmt-box" id="nexusText">' + this._buildNexusTemplate(ratings, answers) + '</div>' +
-          '<button class="copy-btn" onclick="Decode38.UI.copyEl(\'nexusText\',this)" style="margin-top:.5rem">\uD83D\uDCCB Copy Nexus Framework</button></div>';
+          '<button class="copy-btn" data-action="copy-el" data-target="nexusText" style="margin-top:.5rem">\uD83D\uDCCB Copy Nexus Framework</button></div>';
       }
 
       html += '</div></div>';
@@ -421,7 +421,7 @@ Decode38.UI = {
 
     // ── C&P Tips Panel ──────────────────────────────────────────
     if (Decode38.Features.isAvailable('CP_TIPS')) {
-      html += '<div class="panel"><div class="panel-head" onclick="Decode38.UI.togglePanel(this)" role="button" aria-expanded="true" tabindex="0">' +
+      html += '<div class="panel"><div class="panel-head" data-action="toggle-panel" role="button" aria-expanded="true" tabindex="0">' +
         '<div class="panel-title-wrap"><div class="panel-icon pi-purple">\uD83C\uDFAF</div>' +
         '<div><div class="panel-title">C&P Exam Preparation</div>' +
         '<div class="panel-subtitle">How to give an honest, accurate account that reflects your full functional impact</div></div></div>' +
@@ -440,7 +440,7 @@ Decode38.UI = {
 
     // ── Restart Button ──────────────────────────────────────────
     html += '<div style="text-align:center;padding:2rem 0">' +
-      '<button class="btn-restart" onclick="Decode38.App.restartApp()">\u2190 Start a New Assessment</button>' +
+      '<button class="btn-restart" data-action="restart-app">\u2190 Start a New Assessment</button>' +
       '<p style="font-size:.72rem;color:var(--text-light);margin-top:.75rem">Decode38 \u00B7 Educational tool only \u00B7 Not legal or medical advice</p></div>';
 
     return html;
@@ -470,7 +470,7 @@ Decode38.UI = {
 
   // ── Build Rights Panel (static content) ─────────────────────────
   _buildRightsPanel: function() {
-    return '<div class="panel"><div class="panel-head" onclick="Decode38.UI.togglePanel(this)" role="button" aria-expanded="false" tabindex="0">' +
+    return '<div class="panel"><div class="panel-head" data-action="toggle-panel" role="button" aria-expanded="false" tabindex="0">' +
       '<div class="panel-title-wrap"><div class="panel-icon pi-green">\uD83E\uDD1D</div>' +
       '<div><div class="panel-title">Free Help &amp; Your Legal Rights</div>' +
       '<div class="panel-subtitle">Accredited organizations and federal protections every veteran should know</div></div></div>' +
@@ -497,9 +497,66 @@ Decode38.UI = {
 };
 
 // ── Event Delegation ──────────────────────────────────────────────
-// Handles all .opt clicks and .mod-sel-btn clicks via data-* attributes
-// to avoid any quote-escaping bugs in inline onclick handlers.
+// All interaction is handled here via data-action attributes.
+// No inline onclick handlers — CSP script-src 'self' blocks them.
 document.addEventListener('click', function(e) {
+
+  // ── data-action routing ─────────────────────────────────────────
+  var actionEl = e.target.closest('[data-action]');
+  if (actionEl) {
+    var action = actionEl.dataset.action;
+
+    // Prevent default on anchor tags to avoid hash navigation
+    if (actionEl.tagName === 'A') e.preventDefault();
+
+    switch (action) {
+      case 'start-app':
+        Decode38.App.startApp();
+        return;
+      case 'restart-app':
+        Decode38.App.restartApp();
+        return;
+      case 'legal-open':
+        Decode38.Legal.open();
+        return;
+      case 'legal-close':
+        Decode38.Legal.close();
+        return;
+      case 'legal-overlay':
+        // Only close if clicking the overlay itself, not the modal content
+        if (e.target === actionEl) Decode38.Legal.close();
+        return;
+      case 'save-api-key':
+        Decode38.App.saveApiKey();
+        return;
+      case 'go-back':
+        Decode38.App.goBack();
+        return;
+      case 'go-next':
+        Decode38.App.goNext();
+        return;
+      case 'run-generate':
+        Decode38.App.runGenerate();
+        return;
+      case 'begin-intake':
+        Decode38.App.beginIntake();
+        return;
+      case 'dismiss-trigger':
+        Decode38.App.dismissTriggerWarning();
+        return;
+      case 'toggle-panel':
+        Decode38.UI.togglePanel(actionEl);
+        return;
+      case 'print-report':
+        Decode38.UI.printReport();
+        return;
+      case 'copy-el':
+        Decode38.UI.copyEl(actionEl.dataset.target, actionEl);
+        return;
+    }
+  }
+
+  // ── .opt clicks (answer selections) ─────────────────────────────
   var optBtn = e.target.closest('.opt[data-field]');
   if (optBtn) {
     e.preventDefault();

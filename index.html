@@ -55,11 +55,11 @@
 
 <!-- ── Header ────────────────────────────────────────── -->
 <header role="banner">
-  <a class="logo" href="#" onclick="Decode38.App.restartApp();return false" aria-label="Decode38 home">
+  <a class="logo" href="#" data-action="restart-app" aria-label="Decode38 home">
     <div class="logo-star" aria-hidden="true"></div>
     <span class="logo-text">Decode<span>38</span></span>
   </a>
-  <div class="header-badge">By vets, for vets &middot; Free forever &middot; <a href="#" onclick="Decode38.Legal.open();return false" style="color:#64748B;text-decoration:underline;text-underline-offset:2px">Legal Notices</a></div>
+  <div class="header-badge">By vets, for vets &middot; Free forever &middot; <a href="#" data-action="legal-open" style="color:#64748B;text-decoration:underline;text-underline-offset:2px">Legal Notices</a></div>
 </header>
 
 <!-- ── Legal Banner ──────────────────────────────────── -->
@@ -76,7 +76,7 @@
   <div class="hero-eyebrow">&#127894;&#65039; By Veterans &middot; For Veterans &middot; Free Forever</div>
   <h1>We decoded the system.<br>Now it's your turn to <em>use it.</em></h1>
   <p class="hero-sub">Decode38 was built by veterans who went through the VA claims process and learned &mdash; the hard way &mdash; that the system has a language of its own. We decoded it. Every question, every rating formula, every C&amp;P tip in this tool comes from real experience in the system. Free. Always. Because you already paid.</p>
-  <button class="btn-hero" onclick="Decode38.App.startApp()" aria-label="Start your free VA rating assessment">&#9654; Decode Your Rating &mdash; Free</button>
+  <button class="btn-hero" data-action="start-app" aria-label="Start your free VA rating assessment">&#9654; Decode Your Rating &mdash; Free</button>
   <p style="margin-top:.65rem;font-size:.72rem;color:rgba(148,163,184,.8)">No account needed &middot; No email required &middot; Runs in your browser</p>
   <div class="hero-stats">
     <div><div class="stat-num">38 CFR</div><div class="stat-lbl">Part 4 Compliant</div></div>
@@ -101,73 +101,73 @@
     <p style="font-size:.85rem;color:var(--text-mid);margin-bottom:1.25rem">Select the service-connected conditions you want to evaluate for VA compensation. You can choose one or several &mdash; the tool walks through each one.</p>
 
     <div class="module-grid">
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#129504;</div>
         <div class="module-title">PTSD / Mental Health</div>
         <div class="module-desc">PTSD, anxiety, depression, adjustment disorder</div>
         <div class="module-badge">DC 9411</div>
       </div>
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#129460;</div>
         <div class="module-title">Back &amp; Spine</div>
         <div class="module-desc">Lumbar, cervical, thoracic strain, DDD, radiculopathy</div>
         <div class="module-badge">DC 5235</div>
       </div>
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#129461;</div>
         <div class="module-title">Knee Conditions</div>
         <div class="module-desc">Instability, limitation of motion, meniscus, patella</div>
         <div class="module-badge">DC 5257</div>
       </div>
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#128066;</div>
         <div class="module-title">Tinnitus &amp; Hearing Loss</div>
         <div class="module-desc">Ringing in ears, noise-induced hearing loss</div>
         <div class="module-badge">DC 6260</div>
       </div>
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#128564;</div>
         <div class="module-title">Sleep Apnea</div>
         <div class="module-desc">Obstructive, central, CPAP requirement</div>
         <div class="module-badge">DC 6847</div>
       </div>
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#129301;</div>
         <div class="module-title">Migraines / Headaches</div>
         <div class="module-desc">Prostrating attacks, frequency, duration</div>
         <div class="module-badge">DC 8100</div>
       </div>
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#128162;</div>
         <div class="module-title">TBI</div>
         <div class="module-desc">Traumatic brain injury, cognitive effects</div>
         <div class="module-badge">DC 8045</div>
       </div>
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#10084;&#65039;</div>
         <div class="module-title">Hypertension</div>
         <div class="module-desc">High blood pressure, cardiovascular</div>
         <div class="module-badge">DC 7101</div>
       </div>
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#129463;</div>
         <div class="module-title">Shoulder Conditions</div>
         <div class="module-desc">Rotator cuff, impingement, instability</div>
         <div class="module-badge">DC 5201</div>
       </div>
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#128293;</div>
         <div class="module-title">Skin Conditions</div>
         <div class="module-desc">Eczema, dermatitis, scars, burn pit exposure</div>
         <div class="module-badge">DC 7800+</div>
       </div>
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#129729;</div>
         <div class="module-title">Respiratory</div>
         <div class="module-desc">Asthma, rhinitis, sinusitis, burn pit/PACT Act</div>
         <div class="module-badge">DC 6602</div>
       </div>
-      <div class="module-card" onclick="Decode38.App.startApp()">
+      <div class="module-card" data-action="start-app">
         <div class="module-icon">&#129462;</div>
         <div class="module-title">Feet &amp; Ankles</div>
         <div class="module-desc">Plantar fasciitis, pes planus, ankle instability</div>
@@ -180,7 +180,7 @@
       <div style="width:3px;background:var(--gold);border-radius:2px;flex-shrink:0;align-self:stretch"></div>
       <div>
         <div style="font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--gold-light);margin-bottom:.3rem">The Decode38 Pledge</div>
-        <div style="font-size:.78rem;color:#94A3B8;line-height:1.65">This tool will never charge fees tied to your claim, refer you to anyone who charges upfront, or sell your information. VSO assistance is always free. Anyone charging upfront fees for VA claims help is violating federal law (38 U.S.C. &sect; 5904). <a href="#" onclick="Decode38.Legal.open();return false" style="color:var(--gold-light);text-decoration:underline;text-underline-offset:2px">Know your rights &rarr;</a></div>
+        <div style="font-size:.78rem;color:#94A3B8;line-height:1.65">This tool will never charge fees tied to your claim, refer you to anyone who charges upfront, or sell your information. VSO assistance is always free. Anyone charging upfront fees for VA claims help is violating federal law (38 U.S.C. &sect; 5904). <a href="#" data-action="legal-open" style="color:var(--gold-light);text-decoration:underline;text-underline-offset:2px">Know your rights &rarr;</a></div>
       </div>
     </div>
 
@@ -195,7 +195,7 @@
       </div>
       <div class="api-row">
         <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." maxlength="200" aria-label="Anthropic API key">
-        <button class="btn-sm" onclick="Decode38.App.saveApiKey()">Save</button>
+        <button class="btn-sm" data-action="save-api-key">Save</button>
       </div>
       <div id="apiStatus" role="status" aria-live="polite"></div>
     </div>
@@ -258,14 +258,14 @@
 <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
 <!-- ── Legal Modal ───────────────────────────────────── -->
-<div class="modal-overlay" id="legalModal" onclick="if(event.target===this)Decode38.Legal.close()" role="dialog" aria-label="Terms of use and legal notices">
+<div class="modal-overlay" id="legalModal" data-action="legal-overlay" role="dialog" aria-label="Terms of use and legal notices">
   <div class="modal">
     <div class="modal-head">
       <div>
         <h3>Terms of Use &amp; Legal Notices</h3>
         <p>Decode38 &middot; Effective upon first use &middot; Updated 2025</p>
       </div>
-      <button class="modal-close" onclick="Decode38.Legal.close()" aria-label="Close legal notices">&times;</button>
+      <button class="modal-close" data-action="legal-close" aria-label="Close legal notices">&times;</button>
     </div>
     <div class="modal-body">
 
@@ -350,10 +350,10 @@
         Content and methodology &copy; 2025&ndash;2026 Decode38. Built by veterans. All rights reserved.
       </div>
       <div class="footer-links">
-        <a href="#" onclick="Decode38.Legal.open();return false">Terms of Use</a>
-        <a href="#" onclick="Decode38.Legal.open();return false">Legal Notices</a>
-        <a href="#" onclick="Decode38.Legal.open();return false">Privacy</a>
-        <a href="#" onclick="Decode38.Legal.open();return false">IP &amp; Copyright</a>
+        <a href="#" data-action="legal-open">Terms of Use</a>
+        <a href="#" data-action="legal-open">Legal Notices</a>
+        <a href="#" data-action="legal-open">Privacy</a>
+        <a href="#" data-action="legal-open">IP &amp; Copyright</a>
       </div>
     </div>
   </div>
