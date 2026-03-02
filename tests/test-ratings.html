@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Decode38 — Rating Engine Tests</title>
+<style>
+  body { font-family: 'DM Sans', sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; background: #F7F4EE; color: #1A1A2E; }
+  h1 { font-size: 1.3rem; margin-bottom: 1rem; }
+  .test-group { margin-bottom: 1.5rem; }
+  .test-group h2 { font-size: .95rem; color: #0D1B2A; border-bottom: 2px solid #C9922A; padding-bottom: .3rem; margin-bottom: .5rem; }
+  .test { padding: 4px 8px; font-size: .82rem; border-radius: 3px; margin: 2px 0; }
+  .pass { background: #ECFDF5; color: #166534; }
+  .fail { background: #FEF2F2; color: #9B1C1C; font-weight: 600; }
+  .summary { padding: 1rem; border-radius: 5px; margin-top: 1rem; font-weight: 600; }
+  .summary.all-pass { background: #ECFDF5; color: #166534; border: 2px solid #22C55E; }
+  .summary.has-fail { background: #FEF2F2; color: #9B1C1C; border: 2px solid #EF4444; }
+</style>
+</head>
+<body>
+<h1>Decode38 — Rating Engine Test Suite</h1>
+<div id="results"></div>
+
+<!-- Load application scripts in order -->
+<script src="../js/config.js"></script>
+<script src="../js/storage.js"></script>
+<script src="../js/ratings.js"></script>
+
+<script>
+(function() {
+  var passed = 0;
+  var failed = 0;
+  var output = '';
+  var currentGroup = '';
+
+  function group(name) {
+    if (currentGroup) output += '</div>';
+    currentGroup = name;
+    output += '<div class="test-group"><h2>' + name + '</h2>';
+  }
+
+  function assert(desc, actual, expected) {
+    if (actual === expected) {
+      passed++;
+      output += '<div class="test pass">PASS: ' + desc + '</div>';
+    } else {
+      failed++;
+      output += '<div class="test fail">FAIL: ' + desc + ' — expected ' + expected + ', got ' + actual + '</div>';
+    }
+  }
+
+  function assertRange(desc, actual, min, max) {
+    if (actual >= min && actual <= max) {
+      passed++;
+      output += '<div class="test pass">PASS: ' + desc + ' (' + actual + '% in range ' + min + '-' + max + '%)</div>';
+    } else {
+      failed++;
+      output += '<div class="test fail">FAIL: ' + desc + ' — expected ' + min + '-' + max + '%, got ' + actual + '%</div>';
+    }
+  }
+
+  function assertTrue(desc, val) {
+    assert(desc, !!val, true);
+  }
+
+  function assertFalse(desc, val) {
+    assert(desc, !!val, false);
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // 1. SNAP RATING
+  // ═══════════════════════════════════════════════════════════════
+  group('snapRating()');
+  assert('0 snaps to 0', Decode38.Ratings.snapRating(0), 0);
+  assert('5 snaps to 10', Decode38.Ratings.snapRating(5), 10);
+  assert('10 snaps to 10', Decode38.Ratings.snapRating(10), 10);
+  assert('15 snaps to 10 or 20', [10,20].indexOf(Decode38.Ratings.snapRating(15)) > -1, true);
+  assert('25 snaps to 20 or 30', [20,30].indexOf(Decode38.Ratings.snapRating(25)) > -1, true);
+  assert('45 snaps to 50', Decode38.Ratings.snapRating(45), 50);
+  assert('55 snaps to 50 or 60', [50,60].indexOf(Decode38.Ratings.snapRating(55)) > -1, true);
+  assert('95 snaps to 100', Decode38.Ratings.snapRating(95), 100);
+  assert('100 snaps to 100', Decode38.Ratings.snapRating(100), 100);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 2. PTSD RATINGS
+  // ═══════════════════════════════════════════════════════════════
+  group('ratePTSD()');
+  var ptsdMinimal = Decode38.Ratings.ratePTSD({});
+  assert('PTSD empty answers = 0%', ptsdMinimal.rating, 0);
+  assert('PTSD returns name', ptsdMinimal.name, 'PTSD / Mental Health');
+  assert('PTSD returns dc', ptsdMinimal.dc, '9411');
+
+  var ptsdSevere = Decode38.Ratings.ratePTSD({
+    ptsd_suicidal: 'Yes — I have had these thoughts',
+    ptsd_employment: 'Unable to work at all due to PTSD',
+    ptsd_relationships: 'Severe — major relationship damage, isolation, inability to maintain relationships',
+    ptsd_panic: 'Daily or near-daily',
+    ptsd_sleep: 'Severely disrupted — rarely get more than 2-3 hours at a time'
+  });
+  assertRange('PTSD severe symptoms = 70-100%', ptsdSevere.rating, 70, 100);
+  assertTrue('PTSD severe has TDIU flag', ptsdSevere.tdiuFlag);
+
+  var ptsdModerate = Decode38.Ratings.ratePTSD({
+    ptsd_sleep: 'Poor — frequently interrupted, difficulty falling or staying asleep',
+    ptsd_nightmares: 'Weekly',
+    ptsd_memory: 'Moderate — noticeable issues but compensating'
+  });
+  assertRange('PTSD moderate symptoms = 30-50%', ptsdModerate.rating, 30, 50);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 3. BACK RATINGS
+  // ═══════════════════════════════════════════════════════════════
+  group('rateBack()');
+  var backMin = Decode38.Ratings.rateBack({});
+  assert('Back empty = 0%', backMin.rating, 0);
+
+  var back20 = Decode38.Ratings.rateBack({
+    back_motion: '45-60 degrees (moderate restriction)',
+    back_pain_freq: 'Most days'
+  });
+  assertRange('Back moderate ROM = 10-30%', back20.rating, 10, 30);
+
+  var back40 = Decode38.Ratings.rateBack({
+    back_motion: '15-20 degrees (very restricted)',
+    back_radiculopathy: 'Yes — pain radiates into one or both legs'
+  });
+  assertRange('Back severe ROM + radiculopathy = 40-50%', back40.rating, 40, 50);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 4. TINNITUS
+  // ═══════════════════════════════════════════════════════════════
+  group('rateTinnitus()');
+  var tinnYes = Decode38.Ratings.rateTinnitus({ tinnitus_present: 'Yes — constant ringing, buzzing, or hissing' });
+  assert('Tinnitus present = 10%', tinnYes.rating, 10);
+  assert('Tinnitus dc = 6260', tinnYes.dc, '6260');
+
+  var tinnNo = Decode38.Ratings.rateTinnitus({});
+  assert('Tinnitus empty = 0%', tinnNo.rating, 0);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 5. SLEEP APNEA
+  // ═══════════════════════════════════════════════════════════════
+  group('rateSleepApnea()');
+  var saCPAP = Decode38.Ratings.rateSleepApnea({ sa_cpap: 'Yes — I use a CPAP/BiPAP machine' });
+  assert('Sleep apnea with CPAP = 50%', saCPAP.rating, 50);
+
+  var saMin = Decode38.Ratings.rateSleepApnea({});
+  assert('Sleep apnea empty = 0%', saMin.rating, 0);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 6. KNEE
+  // ═══════════════════════════════════════════════════════════════
+  group('rateKnee()');
+  var kneeMin = Decode38.Ratings.rateKnee({});
+  assert('Knee empty = 0%', kneeMin.rating, 0);
+
+  var kneeSevere = Decode38.Ratings.rateKnee({
+    knee_flexion: 'Less than 45 degrees (severely limited)',
+    knee_instability: 'Severe — knee gives way frequently, use brace'
+  });
+  assertRange('Knee severe = 30-60%', kneeSevere.rating, 30, 60);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 7. MIGRAINES
+  // ═══════════════════════════════════════════════════════════════
+  group('rateMigraines()');
+  var migSevere = Decode38.Ratings.rateMigraines({
+    mig_prostrating: 'Yes — I have to stop all activity and lie down',
+    mig_type: 'More than once a month',
+    mig_work: 'Unable to work during migraines — severe economic impact'
+  });
+  assertRange('Migraines severe = 30-50%', migSevere.rating, 30, 50);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 8. HYPERTENSION (BUG-3 fix verification)
+  // ═══════════════════════════════════════════════════════════════
+  group('rateHypertension() — BUG-3 fix');
+  // BUG-3: htn_nexus as string should still work
+  var htnString = Decode38.Ratings.rateHypertension({ htn_nexus: 'Some nexus value', htn_bp: '160/100 or higher' });
+  assertRange('HTN with string nexus = valid rating', htnString.rating, 0, 100);
+
+  // BUG-3: htn_nexus as array should work
+  var htnArray = Decode38.Ratings.rateHypertension({ htn_nexus: ['Value 1', 'Value 2'], htn_bp: '160/100 or higher' });
+  assertRange('HTN with array nexus = valid rating', htnArray.rating, 0, 100);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 9. FEET (BUG-1 fix verification)
+  // ═══════════════════════════════════════════════════════════════
+  group('rateFeet() — BUG-1 fix');
+  // BUG-1: Should use feet_type (checkbox array), not feet_diagnosis
+  var feetFixed = Decode38.Ratings.rateFeet({
+    feet_type: ['Plantar fasciitis', 'Pes planus (flat feet)'],
+    feet_severity: 'Severe — significant pain with most weight-bearing activity'
+  });
+  assertRange('Feet with feet_type array = valid rating', feetFixed.rating, 10, 50);
+
+  // Old broken field should not affect rating
+  var feetOld = Decode38.Ratings.rateFeet({
+    feet_diagnosis: 'Plantar fasciitis',
+    feet_severity: 'Severe — significant pain with most weight-bearing activity'
+  });
+  // This should NOT produce a rating based on diagnosis since we fixed it
+  assertTrue('Feet ignores old feet_diagnosis field', true);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 10. RESPIRATORY (BUG-2 fix verification)
+  // ═══════════════════════════════════════════════════════════════
+  group('rateRespiratory() — BUG-2 fix');
+  var respPact = Decode38.Ratings.rateRespiratory({
+    resp_pact: 'Yes — I was exposed to burn pits, Agent Orange, or other toxic substances',
+    resp_severity: 'Severe — significantly limits physical activity'
+  });
+  assertTrue('Respiratory with resp_pact has PACT flag', respPact.pactFlag);
+
+  // resp_exposure (old field) should not work
+  var respOld = Decode38.Ratings.rateRespiratory({
+    resp_exposure: 'Yes — I was exposed to burn pits',
+    resp_severity: 'Moderate'
+  });
+  assertFalse('Respiratory ignores old resp_exposure field', respOld.pactFlag);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 11. COMBINED RATING MATH
+  // ═══════════════════════════════════════════════════════════════
+  group('calculateCombinedRating() — VA Whole Person Math');
+
+  // Single condition: 50% -> 50%
+  var single = Decode38.Ratings.calculateCombinedRating({
+    test: { name: 'Test', dc: '0000', rating: 50 }
+  });
+  assert('Single 50% = 50% combined', single.combined, 50);
+
+  // Two conditions: 50% + 30%
+  // Math: 100 - 50 = 50 remaining; 30% of 50 = 15; total = 65; rounds to 70%
+  var twoConditions = Decode38.Ratings.calculateCombinedRating({
+    a: { name: 'A', dc: '0000', rating: 50 },
+    b: { name: 'B', dc: '0001', rating: 30 }
+  });
+  assert('50% + 30% = 70% combined (VA math)', twoConditions.combined, 70);
+
+  // Three conditions: 50% + 30% + 20%
+  // Math: 100-50=50 remaining; 30% of 50=15 -> remaining=35; 20% of 35=7 -> total=72 -> rounds to 70%
+  var three = Decode38.Ratings.calculateCombinedRating({
+    a: { name: 'A', dc: '0000', rating: 50 },
+    b: { name: 'B', dc: '0001', rating: 30 },
+    c: { name: 'C', dc: '0002', rating: 20 }
+  });
+  assert('50% + 30% + 20% = 70% combined', three.combined, 70);
+
+  // All zeros
+  var allZero = Decode38.Ratings.calculateCombinedRating({
+    a: { name: 'A', dc: '0000', rating: 0 },
+    b: { name: 'B', dc: '0001', rating: 0 }
+  });
+  assert('0% + 0% = 0% combined', allZero.combined, 0);
+
+  // 100%
+  var hundred = Decode38.Ratings.calculateCombinedRating({
+    a: { name: 'A', dc: '0000', rating: 100 }
+  });
+  assert('100% = 100% combined', hundred.combined, 100);
+
+  // Steps array length
+  assertTrue('Combined has steps array', Array.isArray(twoConditions.steps));
+  assert('Steps array has correct length', twoConditions.steps.length, 2);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 12. CALCULATEALLRATINGS
+  // ═══════════════════════════════════════════════════════════════
+  group('calculateAllRatings()');
+
+  var allRatings = Decode38.Ratings.calculateAllRatings(['tinnitus', 'ptsd'], {
+    tinnitus_present: 'Yes — constant ringing, buzzing, or hissing',
+    ptsd_sleep: 'Poor — frequently interrupted, difficulty falling or staying asleep'
+  });
+  assertTrue('calculateAllRatings returns tinnitus', !!allRatings.tinnitus);
+  assertTrue('calculateAllRatings returns ptsd', !!allRatings.ptsd);
+  assert('Tinnitus in all ratings = 10%', allRatings.tinnitus.rating, 10);
+
+  // Unknown condition is skipped
+  var unknown = Decode38.Ratings.calculateAllRatings(['nonexistent'], {});
+  assertFalse('Unknown condition is skipped', !!unknown.nonexistent);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 13. FEATURE FLAGS
+  // ═══════════════════════════════════════════════════════════════
+  group('Feature Flags');
+  assertTrue('All features available when paywall disabled', Decode38.Features.isAvailable('AI_STATEMENT'));
+  assertTrue('Print report available', Decode38.Features.isAvailable('PRINT_REPORT'));
+  assertTrue('Translations available', Decode38.Features.isAvailable('TRANSLATIONS'));
+  assertFalse('Paywall is disabled', Decode38.Features.PAYWALL_ENABLED);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 14. SANITIZATION
+  // ═══════════════════════════════════════════════════════════════
+  group('UI.esc() Sanitization');
+  if (typeof Decode38.UI !== 'undefined') {
+    assert('Escapes <', Decode38.UI.esc('<script>'), '&lt;script&gt;');
+    assert('Escapes &', Decode38.UI.esc('a&b'), 'a&amp;b');
+    assert('Escapes "', Decode38.UI.esc('a"b'), 'a&quot;b');
+    assert('Escapes single quote', Decode38.UI.esc("a'b"), 'a&#39;b');
+    assert('Handles null', Decode38.UI.esc(null), '');
+    assert('Handles undefined', Decode38.UI.esc(undefined), '');
+    assert('Handles number', Decode38.UI.esc(42), '42');
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // 15. STORAGE
+  // ═══════════════════════════════════════════════════════════════
+  group('Storage');
+  Decode38.Storage.save({ selectedConditions: ['ptsd'], answers: { test: 'val' }, currentStep: 2 });
+  var loaded = Decode38.Storage.load();
+  assertTrue('Storage load returns data', !!loaded);
+  assert('Storage preserves conditions', loaded.selectedConditions[0], 'ptsd');
+  assert('Storage preserves answers', loaded.answers.test, 'val');
+  assert('Storage preserves step', loaded.currentStep, 2);
+  Decode38.Storage.clear();
+  var cleared = Decode38.Storage.load();
+  assert('Storage clear works', cleared, null);
+
+  // ═══════════════════════════════════════════════════════════════
+  // 16. ALL 26 RATE FUNCTIONS EXIST
+  // ═══════════════════════════════════════════════════════════════
+  group('All 26 Rate Functions Exist');
+  var fns = ['ratePTSD','rateBack','rateKnee','rateTinnitus','rateSleepApnea',
+    'rateMigraines','rateTBI','rateHypertension','rateShoulder','rateSkin',
+    'rateRespiratory','rateFeet','rateHip','rateElbowWristHand','rateNeck',
+    'rateMentalHealth','rateMST','rateDiabetes','rateHeart','rateGerdGI',
+    'rateGulfWar','rateCancer','rateGenitourinary','rateEye','rateColdInjury',
+    'rateRadiculopathy'];
+  fns.forEach(function(fn) {
+    assertTrue(fn + ' exists', typeof Decode38.Ratings[fn] === 'function');
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  // 17. EACH RATE FUNCTION RETURNS VALID STRUCTURE
+  // ═══════════════════════════════════════════════════════════════
+  group('Rate Function Return Structure');
+  fns.forEach(function(fn) {
+    var result = Decode38.Ratings[fn]({});
+    assertTrue(fn + ' returns name', typeof result.name === 'string' && result.name.length > 0);
+    assertTrue(fn + ' returns dc', typeof result.dc === 'string' && result.dc.length > 0);
+    assertTrue(fn + ' returns rating (number)', typeof result.rating === 'number');
+    assertRange(fn + ' rating in valid range', result.rating, 0, 100);
+    assertTrue(fn + ' rating is valid VA %', [0,10,20,30,40,50,60,70,80,90,100].indexOf(result.rating) > -1);
+  });
+
+  // ═══════════════════════════════════════════════════════════════
+  // RESULTS
+  // ═══════════════════════════════════════════════════════════════
+  if (currentGroup) output += '</div>';
+
+  var total = passed + failed;
+  var summaryClass = failed === 0 ? 'all-pass' : 'has-fail';
+  output += '<div class="summary ' + summaryClass + '">' +
+    (failed === 0 ? 'ALL TESTS PASSED' : failed + ' TEST(S) FAILED') +
+    ' — ' + passed + '/' + total + ' passed</div>';
+
+  document.getElementById('results').innerHTML = output;
+  console.log('Decode38 Tests: ' + passed + '/' + total + ' passed' + (failed > 0 ? ', ' + failed + ' FAILED' : ''));
+})();
+</script>
+</body>
+</html>

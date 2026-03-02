@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ── CSP — Content Security Policy ─────────────────── -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com; img-src 'self' data:;">
+
+<!-- ── Primary Meta ──────────────────────────────────── -->
+<title>Decode38 — Free VA Disability Rating Estimator for Veterans</title>
+<meta name="description" content="Decode38 is a free VA disability rating calculator built by veterans, for veterans. 26 condition modules. 38 CFR Part 4 compliant. Know your rating, know your language, walk into your C&P exam prepared.">
+<meta name="keywords" content="VA disability rating, VA disability calculator, veteran disability claim, C&P exam, PTSD rating, 38 CFR, TDIU, VA compensation, veteran benefits">
+<meta name="author" content="Decode38">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0D1B2A">
+
+<!-- ── Open Graph / Social ──────────────────────────── -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Decode38 — VA Rating Tool | By Veterans, For Veterans">
+<meta property="og:description" content="Built by veterans who decoded the system. 26 conditions, 38 CFR compliant. Free forever.">
+<meta property="og:url" content="https://decode38app.com">
+<meta property="og:image" content="https://decode38app.com/og-image.png">
+<meta property="og:site_name" content="Decode38">
+
+<!-- ── Twitter Card ─────────────────────────────────── -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Decode38 — VA Rating Tool | By Veterans, For Veterans">
+<meta name="twitter:description" content="Built by vets who decoded the system. Know your rating. Know the language. Walk in prepared.">
+
+<!-- ── Canonical ────────────────────────────────────── -->
+<link rel="canonical" href="https://decode38app.com">
+
+<!-- ── Favicon (inline SVG) ─────────────────────────── -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='10' fill='%230D1B2A'/><polygon points='32,6 38,24 58,24 42,37 48,55 32,43 16,55 22,37 6,24 26,24' fill='%23C9922A'/></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='10' fill='%230D1B2A'/><polygon points='32,6 38,24 58,24 42,37 48,55 32,43 16,55 22,37 6,24 26,24' fill='%23C9922A'/></svg>">
+
+<!-- ── Fonts ─────────────────────────────────────────── -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+
+<!-- ── Styles ────────────────────────────────────────── -->
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ── Skip to Content (Accessibility) ───────────────── -->
+<a href="#main-content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- ── 988 Crisis Banner (Always Visible) ────────────── -->
+<div class="crisis-banner" role="banner" aria-label="Veterans Crisis Line">
+  <span>Veterans Crisis Line: Call or text <a href="tel:988"><strong>988</strong></a> (press 1 for veterans) &middot; <a href="https://www.veteranscrisisline.net/get-help-now/chat/" target="_blank" rel="noopener">Chat online</a></span>
+</div>
+
+<!-- ── Header ────────────────────────────────────────── -->
+<header role="banner">
+  <a class="logo" href="#" data-action="restart-app" aria-label="Decode38 home">
+    <div class="logo-star" aria-hidden="true"></div>
+    <span class="logo-text">Decode<span>38</span></span>
+  </a>
+  <div class="header-badge">By vets, for vets &middot; Free forever &middot; <a href="#" data-action="legal-open" style="color:#64748B;text-decoration:underline;text-underline-offset:2px">Legal Notices</a></div>
+</header>
+
+<!-- ── Legal Banner ──────────────────────────────────── -->
+<div class="legal-banner">
+  <div class="legal-banner-icon" aria-hidden="true">&#9878;&#65039;</div>
+  <div class="legal-banner-text">
+    <strong>IMPORTANT LEGAL NOTICE:</strong>
+    Decode38 is an <strong>educational tool only</strong>. It does not provide legal advice, medical advice, or benefits determinations. All content is designed to help veterans and service members understand the language gap between everyday descriptions and VA compensation terminology. Estimated compensation levels are not official VA determinations. Always consult an <strong>accredited VSO, attorney, or claims agent</strong> before filing a claim. Results are based on 38 CFR Part 4 criteria but do not account for all individual circumstances, medical evidence, or adjudicator discretion.
+  </div>
+</div>
+
+<!-- ── Hero ───────────────────────────────────────────── -->
+<div class="hero" id="heroSection">
+  <div class="hero-eyebrow">&#127894;&#65039; By Veterans &middot; For Veterans &middot; Free Forever</div>
+  <h1>We decoded the system.<br>Now it's your turn to <em>use it.</em></h1>
+  <p class="hero-sub">Decode38 was built by veterans who went through the VA claims process and learned &mdash; the hard way &mdash; that the system has a language of its own. We decoded it. Every question, every rating formula, every C&amp;P tip in this tool comes from real experience in the system. Free. Always. Because you already paid.</p>
+  <button class="btn-hero" data-action="start-app" aria-label="Start your free VA rating assessment">&#9654; Decode Your Rating &mdash; Free</button>
+  <p style="margin-top:.65rem;font-size:.72rem;color:rgba(148,163,184,.8)">No account needed &middot; No email required &middot; Runs in your browser</p>
+  <div class="hero-stats">
+    <div><div class="stat-num">38 CFR</div><div class="stat-lbl">Part 4 Compliant</div></div>
+    <div><div class="stat-num">26</div><div class="stat-lbl">Condition Modules</div></div>
+    <div><div class="stat-num">AD/Vet</div><div class="stat-lbl">Active &amp; Separated</div></div>
+    <div><div class="stat-num">&#127894;&#65039;</div><div class="stat-lbl">Vet Built</div></div>
+  </div>
+</div>
+
+<!-- ── Main Content ──────────────────────────────────── -->
+<main id="main-content" role="main">
+
+  <!-- Landing Area -->
+  <div id="landingArea">
+    <div style="background:linear-gradient(135deg,#0D1B2A,#1B3A6B);border-radius:5px;padding:1rem 1.25rem;margin:1.5rem 0 1.25rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+      <div style="font-size:1.5rem;flex-shrink:0" aria-hidden="true">&#127894;&#65039;</div>
+      <div>
+        <div style="font-family:'Libre Baskerville',serif;color:#fff;font-size:.9rem;font-weight:700;margin-bottom:2px">Built by Veterans. Maintained by Veterans.</div>
+        <div style="color:#94A3B8;font-size:.76rem;line-height:1.55">Every question, every rating formula, every C&amp;P tip in this tool was built from real experience navigating the VA system. We decoded it so you don't have to. The core rating tool is <strong style="color:var(--gold-light)">free forever</strong>.</div>
+      </div>
+    </div>
+    <p style="font-size:.85rem;color:var(--text-mid);margin-bottom:1.25rem">Select the service-connected conditions you want to evaluate for VA compensation. You can choose one or several &mdash; the tool walks through each one.</p>
+
+    <div class="module-grid">
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#129504;</div>
+        <div class="module-title">PTSD / Mental Health</div>
+        <div class="module-desc">PTSD, anxiety, depression, adjustment disorder</div>
+        <div class="module-badge">DC 9411</div>
+      </div>
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#129460;</div>
+        <div class="module-title">Back &amp; Spine</div>
+        <div class="module-desc">Lumbar, cervical, thoracic strain, DDD, radiculopathy</div>
+        <div class="module-badge">DC 5235</div>
+      </div>
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#129461;</div>
+        <div class="module-title">Knee Conditions</div>
+        <div class="module-desc">Instability, limitation of motion, meniscus, patella</div>
+        <div class="module-badge">DC 5257</div>
+      </div>
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#128066;</div>
+        <div class="module-title">Tinnitus &amp; Hearing Loss</div>
+        <div class="module-desc">Ringing in ears, noise-induced hearing loss</div>
+        <div class="module-badge">DC 6260</div>
+      </div>
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#128564;</div>
+        <div class="module-title">Sleep Apnea</div>
+        <div class="module-desc">Obstructive, central, CPAP requirement</div>
+        <div class="module-badge">DC 6847</div>
+      </div>
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#129301;</div>
+        <div class="module-title">Migraines / Headaches</div>
+        <div class="module-desc">Prostrating attacks, frequency, duration</div>
+        <div class="module-badge">DC 8100</div>
+      </div>
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#128162;</div>
+        <div class="module-title">TBI</div>
+        <div class="module-desc">Traumatic brain injury, cognitive effects</div>
+        <div class="module-badge">DC 8045</div>
+      </div>
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#10084;&#65039;</div>
+        <div class="module-title">Hypertension</div>
+        <div class="module-desc">High blood pressure, cardiovascular</div>
+        <div class="module-badge">DC 7101</div>
+      </div>
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#129463;</div>
+        <div class="module-title">Shoulder Conditions</div>
+        <div class="module-desc">Rotator cuff, impingement, instability</div>
+        <div class="module-badge">DC 5201</div>
+      </div>
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#128293;</div>
+        <div class="module-title">Skin Conditions</div>
+        <div class="module-desc">Eczema, dermatitis, scars, burn pit exposure</div>
+        <div class="module-badge">DC 7800+</div>
+      </div>
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#129729;</div>
+        <div class="module-title">Respiratory</div>
+        <div class="module-desc">Asthma, rhinitis, sinusitis, burn pit/PACT Act</div>
+        <div class="module-badge">DC 6602</div>
+      </div>
+      <div class="module-card" data-action="start-app">
+        <div class="module-icon">&#129462;</div>
+        <div class="module-title">Feet &amp; Ankles</div>
+        <div class="module-desc">Plantar fasciitis, pes planus, ankle instability</div>
+        <div class="module-badge">DC 5276</div>
+      </div>
+    </div>
+
+    <!-- Decode38 Pledge -->
+    <div style="background:var(--navy);border-radius:var(--r);padding:1.1rem 1.4rem;margin-bottom:1.25rem;display:flex;gap:12px;align-items:flex-start">
+      <div style="width:3px;background:var(--gold);border-radius:2px;flex-shrink:0;align-self:stretch"></div>
+      <div>
+        <div style="font-family:'Libre Baskerville',serif;font-size:.85rem;color:var(--gold-light);margin-bottom:.3rem">The Decode38 Pledge</div>
+        <div style="font-size:.78rem;color:#94A3B8;line-height:1.65">This tool will never charge fees tied to your claim, refer you to anyone who charges upfront, or sell your information. VSO assistance is always free. Anyone charging upfront fees for VA claims help is violating federal law (38 U.S.C. &sect; 5904). <a href="#" data-action="legal-open" style="color:var(--gold-light);text-decoration:underline;text-underline-offset:2px">Know your rights &rarr;</a></div>
+      </div>
+    </div>
+
+    <!-- API Key Panel -->
+    <div class="api-panel">
+      <div class="api-panel-head">
+        <div class="api-panel-icon" aria-hidden="true">&#128273;</div>
+        <div>
+          <div class="api-panel-title">Enable AI-Powered Personal Statement</div>
+          <div class="api-panel-desc">Enter your own Anthropic API key to enable AI-generated personal statements. Get a key at console.anthropic.com &mdash; costs pennies per use. Your key runs entirely in your browser and is never stored on any server.</div>
+        </div>
+      </div>
+      <div class="api-row">
+        <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." maxlength="200" aria-label="Anthropic API key">
+        <button class="btn-sm" data-action="save-api-key">Save</button>
+      </div>
+      <div id="apiStatus" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar-wrap" id="progressWrap">
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+    <div class="progress-meta">
+      <strong id="progressLabel">Step 1</strong>
+      <span id="progressCount"></span>
+    </div>
+  </div>
+
+  <!-- Form Area (wizard steps rendered here) -->
+  <div id="formArea" style="display:none" role="form" aria-label="VA rating questionnaire"></div>
+
+  <!-- Loading Screen -->
+  <div class="loading" id="loadingScreen" aria-live="polite">
+    <div class="spinner" aria-hidden="true"></div>
+    <h2>Building your compensation summary...</h2>
+    <p style="color:var(--text-light);font-size:.82rem">Applying 38 CFR Part 4 criteria to your responses</p>
+    <div class="load-steps">
+      <div class="ls" id="ls1"><div class="ls-ic">&#9203;</div> Estimating your compensation levels</div>
+      <div class="ls" id="ls2"><div class="ls-ic">&#9203;</div> Identifying related conditions</div>
+      <div class="ls" id="ls3"><div class="ls-ic">&#9203;</div> Translating to VA terminology</div>
+      <div class="ls" id="ls4"><div class="ls-ic">&#9203;</div> Generating C&amp;P exam tips</div>
+      <div class="ls" id="ls5"><div class="ls-ic">&#9203;</div> Drafting personal statement</div>
+    </div>
+  </div>
+
+  <!-- Print Header (for printed reports) -->
+  <div id="printHeader"></div>
+  <div class="print-disclaimer">Decode38 is an educational tool built by veterans. This report is based on 38 CFR Part 4 criteria applied to self-reported responses. It is not an official VA determination and does not establish service connection. Always consult an accredited VSO or VA-accredited attorney before filing. &copy; 2025&ndash;2026 Decode38 &mdash; All rights reserved.</div>
+
+  <!-- Results Area -->
+  <div class="results" id="resultsArea" role="region" aria-label="Rating results"></div>
+
+</main>
+
+<!-- ── Session Resume Overlay ────────────────────────── -->
+<div class="resume-overlay" id="resumeOverlay">
+  <div class="resume-modal" role="dialog" aria-label="Resume previous session">
+    <h3>Resume Your Session?</h3>
+    <p>You have a saved session from earlier.</p>
+    <p class="resume-info"></p>
+    <div class="resume-actions">
+      <button class="btn-back" id="resumeNo">Start Fresh</button>
+      <button class="btn-next" id="resumeYes">Resume Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Save Toast ────────────────────────────────────── -->
+<div class="save-toast" id="saveToast" role="status" aria-live="polite">Progress saved</div>
+
+<!-- ── Screen Reader Announcer ───────────────────────── -->
+<div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+<!-- ── Legal Modal ───────────────────────────────────── -->
+<div class="modal-overlay" id="legalModal" data-action="legal-overlay" role="dialog" aria-label="Terms of use and legal notices">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <h3>Terms of Use &amp; Legal Notices</h3>
+        <p>Decode38 &middot; Effective upon first use &middot; Updated 2025</p>
+      </div>
+      <button class="modal-close" data-action="legal-close" aria-label="Close legal notices">&times;</button>
+    </div>
+    <div class="modal-body">
+
+      <h4>1. Educational Purpose &mdash; Not Legal or Medical Advice</h4>
+      <p>Decode38 is an educational tool designed to help veterans and service members understand the language gap between everyday descriptions and VA compensation terminology. Nothing on this site constitutes legal advice, medical advice, a benefits determination, or the establishment of an attorney-client or provider-patient relationship.</p>
+      <p>Estimated compensation levels are generated from self-reported responses applied against 38 CFR Part 4 criteria. They are not official VA ratings and do not account for the full evidentiary record, C&amp;P examination findings, or adjudicator discretion. Always consult an accredited VSO representative, VA-accredited claims agent, or VA-accredited attorney before filing a claim.</p>
+
+      <h4>2. Your Legal Rights &mdash; Protection from Predatory Claim Services</h4>
+      <div class="highlight">
+        <strong>Federal law protects you from anyone charging upfront fees for VA claims assistance.</strong>
+        Under 38 U.S.C. &sect; 5904 and 38 CFR Part 14, accredited claims agents and attorneys may only charge fees after a claim is decided, and only on past-due benefits (back pay) awarded. Any person or company charging you money before your claim is decided is violating federal law.
+      </div>
+      <p>Your rights as a veteran claimant:</p>
+      <ul>
+        <li>You have the right to free claims assistance from any accredited VSO representative (DAV, VFW, American Legion, AMVETS, and others).</li>
+        <li>You have the right to file directly with VA at no cost through va.gov.</li>
+        <li>Accredited representatives may only be paid from retroactive (back pay) benefits awarded &mdash; never upfront.</li>
+        <li>Maximum attorney/agent fees are regulated by VA and subject to approval.</li>
+        <li>You can verify whether someone is VA-accredited at <a href="https://www.va.gov/ogc/apps/accreditation/index.asp" target="_blank" rel="noopener">va.gov/ogc</a>.</li>
+        <li>To report a predatory claim service, contact the VA Office of General Counsel at 1-800-827-1000 or your state attorney general.</li>
+      </ul>
+      <p>Decode38 will never charge fees tied to your claim outcome, refer you to any service that charges upfront fees, or profit from the outcome of your VA claim.</p>
+
+      <h4>3. Intellectual Property &amp; Copyright</h4>
+      <p>All content on Decode38 &mdash; including the compensation language translations, question frameworks, rating methodology, C&amp;P exam guidance, nexus letter frameworks, user interface design, and written content &mdash; is the original intellectual property of Decode38 and is protected under United States copyright law (17 U.S.C. &sect; 101 et seq.).</p>
+      <p>Copyright &copy; 2025&ndash;2026 Decode38. All rights reserved.</p>
+      <p>You may use the outputs of this tool (translations, statement drafts, nexus frameworks) for your own personal VA claim. You may not reproduce, distribute, resell, sublicense, or create derivative works from Decode38 content or methodology without express written permission.</p>
+      <p>The name &ldquo;Decode38&rdquo; and associated branding are proprietary. Unauthorized use of the Decode38 name or likeness in connection with veterans benefits services is prohibited.</p>
+
+      <h4>4. No Warranties</h4>
+      <p>Decode38 is provided &ldquo;as is&rdquo; without warranties of any kind, express or implied. Compensation level estimates are approximations based on self-reported information and may not reflect actual VA adjudication outcomes. VA ratings are determined by human adjudicators weighing the full evidentiary record &mdash; no tool can guarantee a specific outcome.</p>
+
+      <h4>5. Privacy</h4>
+      <p>Decode38 does not collect, store, or transmit your personal health information or claim responses. All processing occurs locally in your browser session. If you use the AI personal statement feature, your responses are sent to Anthropic's API using your own API key &mdash; Decode38 does not retain or access your data through that process.</p>
+      <p>Decode38 will never sell your information to third parties, share your data with claims services or law firms, or use your responses for any purpose other than generating your on-screen results.</p>
+
+      <h4>6. Limitation of Liability</h4>
+      <p>To the fullest extent permitted by law, Decode38 and its creators shall not be liable for any damages arising from your use of or reliance on this tool, including but not limited to decisions made based on compensation estimates, claim outcomes, or actions taken as a result of information presented on this site.</p>
+
+      <h4>7. Governing Law</h4>
+      <p>These terms are governed by the laws of the United States and the state of the creator's principal place of business, without regard to conflict of law principles.</p>
+
+      <h4>8. Contact</h4>
+      <p>Questions about these terms or to report a violation of veteran claimant rights, contact us through the Decode38 website. To report a predatory claims service to federal authorities, contact the VA Office of General Counsel at 1-800-827-1000.</p>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Site Footer ───────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="footer-pledge">
+      <strong>The Decode38 Pledge &mdash; Written by Veterans:</strong> We built this because we sat in those waiting rooms. We know what predatory claims mills charge and what they deliver. The rating calculator, combined math, and C&amp;P tips will always be free. Your data is never sold. Your claim is yours. You already paid for it.
+    </div>
+    <div class="site-footer-top">
+      <div class="footer-col">
+        <div class="footer-col-title">Decode38</div>
+        <p>Built by veterans who learned the hard way. A free tool to help you decode the VA compensation system before anyone else profits from your claim.</p>
+        <p style="margin-top:.4rem;color:var(--gold-light);font-size:.7rem;font-weight:600">&#127894;&#65039; Veteran-Founded &middot; Veteran-Led</p>
+        <p style="margin-top:.6rem;color:#475569">&copy; 2025&ndash;2026 Decode38<br>Veteran-Founded &middot; All rights reserved.</p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Free Help</div>
+        <p><a href="https://www.dav.org" target="_blank" rel="noopener">DAV &mdash; Disabled American Veterans</a></p>
+        <p><a href="https://www.vfw.org" target="_blank" rel="noopener">VFW &mdash; Veterans of Foreign Wars</a></p>
+        <p><a href="https://www.legion.org" target="_blank" rel="noopener">American Legion</a></p>
+        <p><a href="https://amvets.org" target="_blank" rel="noopener">AMVETS</a></p>
+        <p><a href="https://www.va.gov/disability" target="_blank" rel="noopener">VA.gov &mdash; File Directly</a></p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Know Your Rights</div>
+        <p>VSO assistance is always free.</p>
+        <p>No one may charge upfront fees for claims help under federal law (38 U.S.C. &sect; 5904).</p>
+        <p><a href="https://www.va.gov/ogc/apps/accreditation/index.asp" target="_blank" rel="noopener">Verify accreditation at VA.gov/OGC &rarr;</a></p>
+        <p style="margin-top:.5rem"><a href="tel:18008271000">Report predatory services: 1-800-827-1000</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">
+        Decode38 is an educational tool only. Not legal or medical advice. Compensation estimates are not official VA determinations.<br>
+        Content and methodology &copy; 2025&ndash;2026 Decode38. Built by veterans. All rights reserved.
+      </div>
+      <div class="footer-links">
+        <a href="#" data-action="legal-open">Terms of Use</a>
+        <a href="#" data-action="legal-open">Legal Notices</a>
+        <a href="#" data-action="legal-open">Privacy</a>
+        <a href="#" data-action="legal-open">IP &amp; Copyright</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ── Scripts (order matters) ───────────────────────── -->
+<script src="js/config.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/conditions.js"></script>
+<script src="js/ratings.js"></script>
+<script src="js/results.js"></script>
+<script src="js/statement.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
