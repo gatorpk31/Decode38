@@ -33,11 +33,11 @@ Decode38.App = {
     var stepInfo = (saved.currentStep + 1) + ' of ' + (saved.selectedConditions.length * 3 + 3);
     overlay.querySelector('.resume-info').textContent =
       condCount + ' condition' + (condCount > 1 ? 's' : '') + ' selected \u00B7 Step ' + stepInfo;
-    overlay.classList.add('show');
+    overlay.classList.add('open');
 
     var self = this;
     document.getElementById('resumeYes').onclick = function() {
-      overlay.classList.remove('show');
+      overlay.classList.remove('open');
       self._state.selectedConditions = saved.selectedConditions;
       self._state.answers = saved.answers || {};
       self._state.allSteps = Decode38.Conditions.buildSteps(saved.selectedConditions);
@@ -46,7 +46,7 @@ Decode38.App = {
       self._renderCurrentStep();
     };
     document.getElementById('resumeNo').onclick = function() {
-      overlay.classList.remove('show');
+      overlay.classList.remove('open');
       Decode38.Storage.clear();
     };
   },
