@@ -1,0 +1,13 @@
+{
+  "name": "decode38",
+  "version": "1.0.0",
+  "description": "Decode38 — VA Disability Rating Tool",
+  "private": true,
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "stripe": "^17.5.0"
+  }
+}
