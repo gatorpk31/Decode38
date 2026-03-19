@@ -1,3 +1,5 @@
+const { getBlobStore } = require("./_blobs");
+
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
@@ -36,13 +38,11 @@ exports.handler = async (event) => {
     };
 
     try {
-      const { getStore } = require("@netlify/blobs");
-      const store = getStore("feedback");
+      const store = getBlobStore("feedback");
       const key = `feedback_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
       await store.setJSON(key, feedback);
     } catch (blobErr) {
-      console.error("Blobs unavailable:", blobErr.message);
-      // Still return success to user — log it for the admin to see in function logs
+      console.error("Blobs error:", blobErr.message);
       console.log("FEEDBACK_FALLBACK:", JSON.stringify(feedback));
     }
 

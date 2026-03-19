@@ -1,9 +1,4 @@
-/**
- * GET /api/health
- * Diagnostic endpoint — shows which environment variables are configured
- * and whether Netlify Blobs is accessible.
- * Returns safe info only (no secret values).
- */
+const { getBlobStore } = require("./_blobs");
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -20,15 +15,15 @@ exports.handler = async (event) => {
     stripe_webhook_secret: !!process.env.STRIPE_WEBHOOK_SECRET,
     admin_password: !!process.env.ADMIN_PASSWORD,
     netlify_blobs_context: !!process.env.NETLIFY_BLOBS_CONTEXT,
-    site_url: process.env.URL || "(not set — will default to https://decode38.com)",
+    netlify_site_id: !!process.env.NETLIFY_SITE_ID,
+    netlify_access_token: !!process.env.NETLIFY_ACCESS_TOKEN,
+    site_url: process.env.URL || "(not set)",
   };
 
-  // Test Blobs connectivity
   let blobsOk = false;
   let blobsError = null;
   try {
-    const { getStore } = require("@netlify/blobs");
-    const store = getStore("health-check");
+    const store = getBlobStore("health-check");
     await store.set("ping", "pong");
     const val = await store.get("ping");
     blobsOk = val === "pong";
@@ -43,6 +38,18 @@ exports.handler = async (event) => {
     checks.admin_password &&
     blobsOk;
 
+  const nextSteps = [];
+  if (!checks.stripe_secret_key) nextSteps.push("Set STRIPE_SECRET_KEY in Netlify > Site settings > Environment variables");
+  if (!checks.stripe_webhook_secret) nextSteps.push("Set STRIPE_WEBHOOK_SECRET in Netlify > Site settings > Environment variables");
+  if (!checks.admin_password) nextSteps.push("Set ADMIN_PASSWORD in Netlify > Site settings > Environment variables");
+  if (!blobsOk) {
+    if (!checks.netlify_blobs_context && !checks.netlify_site_id) {
+      nextSteps.push("Blobs needs credentials: set NETLIFY_SITE_ID (from Site settings > General) and NETLIFY_ACCESS_TOKEN (from app.netlify.com/user/applications) in environment variables");
+    } else {
+      nextSteps.push("Blobs error: " + blobsError);
+    }
+  }
+
   return {
     statusCode: allGood ? 200 : 503,
     headers: CORS,
@@ -51,14 +58,7 @@ exports.handler = async (event) => {
       timestamp: new Date().toISOString(),
       env_vars: checks,
       blobs: { ok: blobsOk, error: blobsError },
-      next_steps: allGood
-        ? "All systems go."
-        : [
-            !checks.stripe_secret_key && "Set STRIPE_SECRET_KEY in Netlify > Site settings > Environment variables",
-            !checks.stripe_webhook_secret && "Set STRIPE_WEBHOOK_SECRET in Netlify > Site settings > Environment variables",
-            !checks.admin_password && "Set ADMIN_PASSWORD in Netlify > Site settings > Environment variables",
-            !blobsOk && "Netlify Blobs not available: " + blobsError,
-          ].filter(Boolean),
+      next_steps: allGood ? ["All systems go."] : nextSteps,
     }, null, 2),
   };
 };

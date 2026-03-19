@@ -1,3 +1,5 @@
+const { getBlobStore } = require("./_blobs");
+
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "Content-Type",
@@ -13,8 +15,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { getStore } = require("@netlify/blobs");
-    const store = getStore("feedback");
+    const store = getBlobStore("feedback");
     const list = await store.list();
 
     const approved = [];
@@ -39,7 +40,6 @@ exports.handler = async (event) => {
     };
   } catch (err) {
     console.error("Reviews error:", err.message);
-    // Return empty list — don't crash the page
     return {
       statusCode: 200,
       headers: CORS,

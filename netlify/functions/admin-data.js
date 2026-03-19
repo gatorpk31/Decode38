@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { getBlobStore } = require("./_blobs");
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -14,17 +15,12 @@ function verifyToken(authHeader) {
   if (dotIdx === -1) return false;
   const payloadB64 = token.slice(0, dotIdx);
   const hmac = token.slice(dotIdx + 1);
-
   try {
     const payload = Buffer.from(payloadB64, "base64").toString();
-    const expected = crypto
-      .createHmac("sha256", process.env.ADMIN_PASSWORD)
-      .update(payload)
-      .digest("hex");
+    const expected = crypto.createHmac("sha256", process.env.ADMIN_PASSWORD).update(payload).digest("hex");
     if (hmac !== expected) return false;
     const { expires } = JSON.parse(payload);
-    if (Date.now() > expires) return false;
-    return true;
+    return Date.now() <= expires;
   } catch {
     return false;
   }
@@ -42,9 +38,8 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { getStore } = require("@netlify/blobs");
-    const feedbackStore = getStore("feedback");
-    const donationStore = getStore("donations");
+    const feedbackStore = getBlobStore("feedback");
+    const donationStore = getBlobStore("donations");
 
     const [feedbackList, donationList] = await Promise.all([
       feedbackStore.list(),
@@ -75,10 +70,6 @@ exports.handler = async (event) => {
     };
   } catch (err) {
     console.error("Admin data error:", err.message);
-    return {
-      statusCode: 500,
-      headers: CORS,
-      body: JSON.stringify({ error: "Failed to fetch data: " + err.message }),
-    };
+    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: err.message }) };
   }
 };
