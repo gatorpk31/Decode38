@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ── CSP — Content Security Policy ─────────────────── -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anthropic.com https://checkout.stripe.com; img-src 'self' data:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anthropic.com https://checkout.stripe.com https://www.google-analytics.com https://www.googletagmanager.com; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com;">
 
 <!-- ── Primary Meta ──────────────────────────────────── -->
 <title>Decode38 — Free VA Disability Rating Estimator for Veterans</title>
@@ -40,6 +40,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 
+<!-- ── Google Analytics ────────────────────────────────── -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WCPS4QH245"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-WCPS4QH245');
+</script>
+
 <!-- ── Styles ────────────────────────────────────────── -->
 <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -59,7 +68,7 @@
     <div class="logo-star" aria-hidden="true"></div>
     <span class="logo-text">Decode<span>38</span></span>
   </a>
-  <div class="header-badge">By vets, for vets &middot; Free forever &middot; <a href="#" data-action="legal-open" style="color:#64748B;text-decoration:underline;text-underline-offset:2px">Legal Notices</a></div>
+  <div class="header-badge">By vets, for vets &middot; Free forever &middot; <a href="#donateSection" class="header-support-link">&#9825; Support Us</a> &middot; <a href="#" data-action="legal-open" style="color:#64748B;text-decoration:underline;text-underline-offset:2px">Legal Notices</a></div>
 </header>
 
 <!-- ── Legal Banner ──────────────────────────────────── -->
@@ -319,8 +328,8 @@
 <div class="donate-section" id="donateSection">
   <div class="donate-inner">
     <div class="donate-text">
-      <div class="donate-title">Support Decode38</div>
-      <p>This tool is free forever. If it helped you, consider buying us a coffee. Every dollar keeps the lights on and helps us add more conditions.</p>
+      <div class="donate-title">&#9749; Support Decode38</div>
+      <p>This tool is free forever &mdash; built by vets, for vets. If it helped you prepare for your claim, consider buying us a coffee. Every dollar keeps the lights on and helps us add more conditions.</p>
     </div>
     <div class="donate-form">
       <div class="donate-amounts">
