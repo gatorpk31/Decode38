@@ -553,6 +553,12 @@ document.addEventListener('click', function(e) {
       case 'copy-el':
         Decode38.UI.copyEl(actionEl.dataset.target, actionEl);
         return;
+      case 'donate':
+        if (Decode38.DonateFeedback) Decode38.DonateFeedback._processDonation();
+        return;
+      case 'submit-feedback':
+        if (Decode38.DonateFeedback) Decode38.DonateFeedback._submitFeedback();
+        return;
     }
   }
 

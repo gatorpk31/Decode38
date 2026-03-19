@@ -1,5 +1,7 @@
 // ══════════════════════════════════════════════════════════════════
 // Decode38 — Donations & Feedback
+// Donation flow via Stripe Checkout, feedback with admin approval,
+// and public approved reviews display.
 // ══════════════════════════════════════════════════════════════════
 Decode38.DonateFeedback = {
 
@@ -16,9 +18,9 @@ Decode38.DonateFeedback = {
 
   _bindDonation: function() {
     var amountInput = document.getElementById('donateAmount');
-    var self = this;
+    if (!amountInput) return;
 
-    // Preset amount buttons
+    // Preset amount buttons (no data-action — direct listeners)
     document.querySelectorAll('.donate-amt').forEach(function(btn) {
       btn.addEventListener('click', function() {
         document.querySelectorAll('.donate-amt').forEach(function(b) { b.classList.remove('active'); });
@@ -32,17 +34,16 @@ Decode38.DonateFeedback = {
       document.querySelectorAll('.donate-amt').forEach(function(b) { b.classList.remove('active'); });
     });
 
-    // Donate button
-    var donateBtn = document.getElementById('donateBtn');
-    if (donateBtn) {
-      donateBtn.addEventListener('click', function() { self._processDonation(); });
-    }
+    // Donate button is handled via data-action="donate" in ui.js event delegation
   },
 
   _processDonation: function() {
-    var amount = document.getElementById('donateAmount').value;
+    var amountEl = document.getElementById('donateAmount');
     var status = document.getElementById('donateStatus');
     var btn = document.getElementById('donateBtn');
+    if (!amountEl || !status || !btn) return;
+
+    var amount = amountEl.value;
 
     if (!amount || Number(amount) < 1) {
       status.textContent = 'Please select or enter an amount ($1 minimum).';
@@ -80,17 +81,27 @@ Decode38.DonateFeedback = {
 
   _checkDonationReturn: function() {
     var params = new URLSearchParams(window.location.search);
-    if (params.get('donation') === 'success') {
+    var donation = params.get('donation');
+    if (donation === 'success' || donation === 'cancelled') {
       var status = document.getElementById('donateStatus');
       if (status) {
-        status.textContent = 'Thank you for your generous donation! You are helping keep Decode38 free for all veterans.';
-        status.style.color = '#22C55E';
+        if (donation === 'success') {
+          status.textContent = 'Thank you for your generous donation! You are helping keep Decode38 free for all veterans.';
+          status.style.color = '#22C55E';
+        } else {
+          status.textContent = 'Donation cancelled. No charge was made.';
+          status.style.color = '#94A3B8';
+        }
       }
       // Clean URL
       window.history.replaceState({}, '', window.location.pathname);
       // Scroll to donation section
       var section = document.getElementById('donateSection');
-      if (section) section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (section) {
+        setTimeout(function() {
+          section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      }
     }
   },
 
@@ -99,7 +110,7 @@ Decode38.DonateFeedback = {
   _bindFeedback: function() {
     var self = this;
 
-    // Star rating
+    // Star rating (direct listeners — not data-action routed)
     document.querySelectorAll('.fb-star').forEach(function(star) {
       star.addEventListener('click', function() {
         self._selectedRating = Number(star.dataset.rating);
@@ -117,11 +128,7 @@ Decode38.DonateFeedback = {
       });
     }
 
-    // Submit
-    var submitBtn = document.getElementById('fbSubmit');
-    if (submitBtn) {
-      submitBtn.addEventListener('click', function() { self._submitFeedback(); });
-    }
+    // Submit button is handled via data-action="submit-feedback" in ui.js event delegation
   },
 
   _highlightStars: function(n) {
@@ -136,11 +143,16 @@ Decode38.DonateFeedback = {
   },
 
   _submitFeedback: function() {
-    var name = document.getElementById('fbName').value.trim();
-    var email = document.getElementById('fbEmail').value.trim();
-    var message = document.getElementById('fbMessage').value.trim();
+    var nameEl = document.getElementById('fbName');
+    var emailEl = document.getElementById('fbEmail');
+    var messageEl = document.getElementById('fbMessage');
     var status = document.getElementById('fbStatus');
     var btn = document.getElementById('fbSubmit');
+    if (!messageEl || !status || !btn) return;
+
+    var name = nameEl ? nameEl.value.trim() : '';
+    var email = emailEl ? emailEl.value.trim() : '';
+    var message = messageEl.value.trim();
 
     if (this._selectedRating === 0) {
       status.textContent = 'Please select a star rating.';
@@ -157,6 +169,7 @@ Decode38.DonateFeedback = {
     btn.disabled = true;
     status.textContent = '';
 
+    var self = this;
     fetch('/api/submit-feedback', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -172,12 +185,11 @@ Decode38.DonateFeedback = {
         if (data.success) {
           status.textContent = 'Thank you for your feedback! It will appear on the site after review.';
           status.style.color = '#22C55E';
-          // Reset form
-          document.getElementById('fbName').value = '';
-          document.getElementById('fbEmail').value = '';
-          document.getElementById('fbMessage').value = '';
-          Decode38.DonateFeedback._selectedRating = 0;
-          Decode38.DonateFeedback._updateStars();
+          if (nameEl) nameEl.value = '';
+          if (emailEl) emailEl.value = '';
+          messageEl.value = '';
+          self._selectedRating = 0;
+          self._updateStars();
         } else {
           status.textContent = data.error || 'Something went wrong.';
           status.style.color = '#EF4444';

@@ -1,11 +1,18 @@
 [build]
+  command = "npm install"
   publish = "."
   functions = "netlify/functions"
 
 [functions]
   node_bundler = "esbuild"
 
-# Redirect /api/* to Netlify Functions
+# Clean URL for admin page
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+# Route /api/* to Netlify Functions
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
