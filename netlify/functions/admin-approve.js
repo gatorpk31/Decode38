@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { getBlobStore } = require("./_blobs");
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -14,17 +15,12 @@ function verifyToken(authHeader) {
   if (dotIdx === -1) return false;
   const payloadB64 = token.slice(0, dotIdx);
   const hmac = token.slice(dotIdx + 1);
-
   try {
     const payload = Buffer.from(payloadB64, "base64").toString();
-    const expected = crypto
-      .createHmac("sha256", process.env.ADMIN_PASSWORD)
-      .update(payload)
-      .digest("hex");
+    const expected = crypto.createHmac("sha256", process.env.ADMIN_PASSWORD).update(payload).digest("hex");
     if (hmac !== expected) return false;
     const { expires } = JSON.parse(payload);
-    if (Date.now() > expires) return false;
-    return true;
+    return Date.now() <= expires;
   } catch {
     return false;
   }
@@ -42,22 +38,16 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { getStore } = require("@netlify/blobs");
     const { key, action } = JSON.parse(event.body || "{}");
-
     if (!key) {
       return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Key is required" }) };
     }
 
-    const store = getStore("feedback");
+    const store = getBlobStore("feedback");
 
     if (action === "delete") {
       await store.delete(key);
-      return {
-        statusCode: 200,
-        headers: CORS,
-        body: JSON.stringify({ success: true, message: "Feedback deleted" }),
-      };
+      return { statusCode: 200, headers: CORS, body: JSON.stringify({ success: true, message: "Feedback deleted" }) };
     }
 
     const feedback = await store.get(key, { type: "json" });
@@ -68,13 +58,9 @@ exports.handler = async (event) => {
     feedback.approved = !feedback.approved;
     await store.setJSON(key, feedback);
 
-    return {
-      statusCode: 200,
-      headers: CORS,
-      body: JSON.stringify({ success: true, approved: feedback.approved }),
-    };
+    return { statusCode: 200, headers: CORS, body: JSON.stringify({ success: true, approved: feedback.approved }) };
   } catch (err) {
     console.error("Approve error:", err.message);
-    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: "Failed to update: " + err.message }) };
+    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: err.message }) };
   }
 };
