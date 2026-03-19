@@ -1,21 +1,29 @@
-const { getStore } = require("@netlify/blobs");
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Content-Type": "application/json",
+};
 
 exports.handler = async (event) => {
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 204, headers: CORS, body: "" };
+  }
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
+    return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: "Method not allowed" }) };
   }
 
   try {
-    const { name, email, rating, message } = JSON.parse(event.body);
+    const body = JSON.parse(event.body || "{}");
+    const { name, email, rating, message } = body;
 
     if (!message || message.trim().length < 5) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Message is required (min 5 characters)" }) };
+      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Message is required (min 5 characters)" }) };
     }
-    if (!rating || rating < 1 || rating > 5) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Rating must be 1-5" }) };
+    if (!rating || Number(rating) < 1 || Number(rating) > 5) {
+      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Rating must be 1-5" }) };
     }
     if (message.length > 2000) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Message too long (max 2000 characters)" }) };
+      return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Message too long (max 2000 characters)" }) };
     }
 
     const feedback = {
@@ -27,17 +35,24 @@ exports.handler = async (event) => {
       approved: false,
     };
 
-    const store = getStore("feedback");
-    const key = `feedback_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    await store.setJSON(key, feedback);
+    try {
+      const { getStore } = require("@netlify/blobs");
+      const store = getStore("feedback");
+      const key = `feedback_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      await store.setJSON(key, feedback);
+    } catch (blobErr) {
+      console.error("Blobs unavailable:", blobErr.message);
+      // Still return success to user — log it for the admin to see in function logs
+      console.log("FEEDBACK_FALLBACK:", JSON.stringify(feedback));
+    }
 
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: CORS,
       body: JSON.stringify({ success: true, message: "Thank you for your feedback!" }),
     };
   } catch (err) {
     console.error("Feedback error:", err.message);
-    return { statusCode: 500, body: JSON.stringify({ error: "Failed to submit feedback" }) };
+    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: "Failed to submit feedback" }) };
   }
 };

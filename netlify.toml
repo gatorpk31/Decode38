@@ -3,9 +3,6 @@
   publish = "."
   functions = "netlify/functions"
 
-[functions]
-  node_bundler = "esbuild"
-
 # Clean URL for admin page
 [[redirects]]
   from = "/admin"

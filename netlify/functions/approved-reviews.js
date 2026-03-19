@@ -1,11 +1,19 @@
-const { getStore } = require("@netlify/blobs");
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "Content-Type",
+  "Content-Type": "application/json",
+};
 
 exports.handler = async (event) => {
+  if (event.httpMethod === "OPTIONS") {
+    return { statusCode: 204, headers: CORS, body: "" };
+  }
   if (event.httpMethod !== "GET") {
-    return { statusCode: 405, body: JSON.stringify({ error: "Method not allowed" }) };
+    return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: "Method not allowed" }) };
   }
 
   try {
+    const { getStore } = require("@netlify/blobs");
     const store = getStore("feedback");
     const list = await store.list();
 
@@ -26,11 +34,16 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json", "Cache-Control": "public, max-age=300" },
+      headers: { ...CORS, "Cache-Control": "public, max-age=300" },
       body: JSON.stringify({ reviews: approved.slice(0, 20) }),
     };
   } catch (err) {
     console.error("Reviews error:", err.message);
-    return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reviews: [] }) };
+    // Return empty list — don't crash the page
+    return {
+      statusCode: 200,
+      headers: CORS,
+      body: JSON.stringify({ reviews: [] }),
+    };
   }
 };
