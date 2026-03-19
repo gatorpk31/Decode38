@@ -353,12 +353,16 @@ textarea{resize:vertical;min-height:76px}
   header{top:32px}
 }
 
+/* ── HEADER SUPPORT LINK ─────────────────────────────── */
+.header-support-link{color:var(--gold)!important;text-decoration:none!important;font-weight:600;transition:color .15s}
+.header-support-link:hover{color:var(--gold-light)!important}
+
 /* ── DONATION SECTION ─────────────────────────────────── */
-.donate-section{background:linear-gradient(135deg,var(--navy) 0%,#152D55 100%);padding:3rem 1.5rem}
+.donate-section{background:linear-gradient(135deg,var(--navy) 0%,#152D55 100%);padding:3rem 1.5rem;border-top:3px solid var(--gold)}
 .donate-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:2.5rem;flex-wrap:wrap}
 .donate-text{flex:1;min-width:260px}
-.donate-title{font-family:'Libre Baskerville',serif;font-size:1.25rem;color:#fff;margin-bottom:.5rem}
-.donate-text p{font-size:.85rem;color:#94A3B8;line-height:1.7}
+.donate-title{font-family:'Libre Baskerville',serif;font-size:1.35rem;color:#fff;margin-bottom:.5rem}
+.donate-text p{font-size:.88rem;color:#B0BEC5;line-height:1.7}
 .donate-form{flex:1;min-width:280px}
 .donate-amounts{display:flex;gap:8px;margin-bottom:10px}
 .donate-amt{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.15);color:#CBD5E1;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;padding:10px 0;flex:1;border-radius:3px;cursor:pointer;transition:all .15s}
@@ -369,7 +373,7 @@ textarea{resize:vertical;min-height:76px}
 .donate-custom-row input{flex:1;padding:10px 12px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.15);border-radius:3px;color:#fff;font-family:'DM Sans',sans-serif;font-size:.88rem}
 .donate-custom-row input:focus{outline:none;border-color:var(--gold)}
 .donate-custom-row input::placeholder{color:#64748B}
-.btn-donate{background:var(--gold);color:var(--navy);font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:700;padding:10px 24px;border:none;border-radius:3px;cursor:pointer;white-space:nowrap;transition:all .2s}
+.btn-donate{background:var(--gold);color:var(--navy);font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:700;padding:11px 28px;border:none;border-radius:3px;cursor:pointer;white-space:nowrap;transition:all .2s;box-shadow:0 2px 8px rgba(201,146,42,.3)}
 .btn-donate:hover{background:var(--gold-light);transform:translateY(-1px)}
 .btn-donate:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .donate-status{font-size:.82rem;margin-top:.6rem;min-height:1.2em}
