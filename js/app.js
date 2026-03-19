@@ -355,4 +355,5 @@ document.addEventListener('keydown', function(e) {
 // ── Boot ────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
   Decode38.App.init();
+  if (Decode38.DonateFeedback) Decode38.DonateFeedback.init();
 });

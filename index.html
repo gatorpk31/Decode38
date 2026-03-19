@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ── CSP — Content Security Policy ─────────────────── -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; connect-src https://api.anthropic.com; img-src 'self' data:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anthropic.com https://checkout.stripe.com; img-src 'self' data:;">
 
 <!-- ── Primary Meta ──────────────────────────────────── -->
 <title>Decode38 — Free VA Disability Rating Estimator for Veterans</title>
@@ -315,6 +315,76 @@
   </div>
 </div>
 
+<!-- ── Donation Banner ────────────────────────────────── -->
+<div class="donate-section" id="donateSection">
+  <div class="donate-inner">
+    <div class="donate-text">
+      <div class="donate-title">Support Decode38</div>
+      <p>This tool is free forever. If it helped you, consider buying us a coffee. Every dollar keeps the lights on and helps us add more conditions.</p>
+    </div>
+    <div class="donate-form">
+      <div class="donate-amounts">
+        <button class="donate-amt" data-amount="5">$5</button>
+        <button class="donate-amt" data-amount="10">$10</button>
+        <button class="donate-amt" data-amount="25">$25</button>
+        <button class="donate-amt" data-amount="50">$50</button>
+      </div>
+      <div class="donate-custom-row">
+        <span class="donate-dollar">$</span>
+        <input type="number" id="donateAmount" min="1" max="1000" placeholder="Other" aria-label="Custom donation amount">
+        <button class="btn-donate" id="donateBtn" data-action="donate">Donate</button>
+      </div>
+      <div id="donateStatus" class="donate-status" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Veteran Reviews ────────────────────────────────── -->
+<div class="reviews-section" id="reviewsSection">
+  <div class="reviews-inner">
+    <h2 class="reviews-title">What Veterans Are Saying</h2>
+    <div class="reviews-grid" id="reviewsGrid">
+      <div class="reviews-loading">Loading reviews...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Feedback Form ─────────────────────────────────── -->
+<div class="feedback-section" id="feedbackSection">
+  <div class="feedback-inner">
+    <h2 class="feedback-title">Leave Feedback</h2>
+    <p class="feedback-desc">Used Decode38? Let us know how it helped. Your review may be featured on the site (with your permission).</p>
+    <div class="feedback-form" id="feedbackForm">
+      <div class="feedback-row">
+        <div class="feedback-field">
+          <label for="fbName">Name <span class="feedback-opt">(optional)</span></label>
+          <input type="text" id="fbName" placeholder="Your name or initials" maxlength="100">
+        </div>
+        <div class="feedback-field">
+          <label for="fbEmail">Email <span class="feedback-opt">(optional, never shared)</span></label>
+          <input type="email" id="fbEmail" placeholder="you@email.com" maxlength="200">
+        </div>
+      </div>
+      <div class="feedback-field">
+        <label>Rating</label>
+        <div class="feedback-stars" id="fbStars" role="radiogroup" aria-label="Rating">
+          <button class="fb-star" data-rating="1" aria-label="1 star">&#9734;</button>
+          <button class="fb-star" data-rating="2" aria-label="2 stars">&#9734;</button>
+          <button class="fb-star" data-rating="3" aria-label="3 stars">&#9734;</button>
+          <button class="fb-star" data-rating="4" aria-label="4 stars">&#9734;</button>
+          <button class="fb-star" data-rating="5" aria-label="5 stars">&#9734;</button>
+        </div>
+      </div>
+      <div class="feedback-field">
+        <label for="fbMessage">Your feedback</label>
+        <textarea id="fbMessage" placeholder="How did Decode38 help you? What could be improved?" maxlength="2000" rows="4"></textarea>
+      </div>
+      <button class="btn-feedback-submit" id="fbSubmit" data-action="submit-feedback">Submit Feedback</button>
+      <div id="fbStatus" class="feedback-status" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ── Site Footer ───────────────────────────────────── -->
 <footer class="site-footer">
   <div class="site-footer-inner">
@@ -367,6 +437,7 @@
 <script src="js/ratings.js"></script>
 <script src="js/results.js"></script>
 <script src="js/statement.js"></script>
+<script src="js/donate-feedback.js"></script>
 <script src="js/app.js"></script>
 
 </body>
