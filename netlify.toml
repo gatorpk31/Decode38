@@ -9,6 +9,12 @@
   to = "/admin.html"
   status = 200
 
+# Privacy policy clean URL
+[[redirects]]
+  from = "/privacy"
+  to = "/privacy.html"
+  status = 200
+
 # Route /api/* to Netlify Functions
 [[redirects]]
   from = "/api/*"
