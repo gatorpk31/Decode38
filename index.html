@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- ── CSP — Content Security Policy ─────────────────── -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anthropic.com https://checkout.stripe.com https://www.google-analytics.com https://www.googletagmanager.com; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; connect-src 'self' https://api.anthropic.com https://checkout.stripe.com https://www.google-analytics.com https://www.googletagmanager.com; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com;">
 
 <!-- ── Primary Meta ──────────────────────────────────── -->
 <title>Decode38 — Free VA Disability Rating Estimator for Veterans</title>
@@ -42,12 +42,7 @@
 
 <!-- ── Google Analytics ────────────────────────────────── -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-WCPS4QH245"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-WCPS4QH245');
-</script>
+<script src="js/ga-init.js"></script>
 
 <!-- ── Styles ────────────────────────────────────────── -->
 <link rel="stylesheet" href="css/styles.css">
@@ -372,6 +367,7 @@
         <div class="feedback-field">
           <label for="fbEmail">Email <span class="feedback-opt">(optional, never shared)</span></label>
           <input type="email" id="fbEmail" placeholder="you@email.com" maxlength="200">
+          <input type="text" id="fbWebsite" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;height:0;width:0;border:0;padding:0" placeholder="Leave this field empty">
         </div>
       </div>
       <div class="feedback-field">

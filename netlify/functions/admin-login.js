@@ -1,12 +1,8 @@
 const crypto = require("crypto");
-
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Content-Type": "application/json",
-};
+const { corsHeaders, safeEqual, rateLimitAllow } = require("./_security");
 
 exports.handler = async (event) => {
+  const CORS = corsHeaders(event);
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS, body: "" };
   }
@@ -16,7 +12,14 @@ exports.handler = async (event) => {
 
   if (!process.env.ADMIN_PASSWORD) {
     console.error("ADMIN_PASSWORD environment variable is not set");
-    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: "Admin password not configured. Set ADMIN_PASSWORD in Netlify environment variables." }) };
+    return { statusCode: 500, headers: CORS, body: JSON.stringify({ error: "Admin login is not configured." }) };
+  }
+
+  // 5 attempts per IP per 15 minutes — the admin password is a single shared
+  // secret, so brute-force protection is essential.
+  const allowed = await rateLimitAllow("adminlogin", event, 5, 15 * 60 * 1000);
+  if (!allowed) {
+    return { statusCode: 429, headers: CORS, body: JSON.stringify({ error: "Too many attempts. Try again in 15 minutes." }) };
   }
 
   try {
@@ -27,7 +30,7 @@ exports.handler = async (event) => {
       return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Password is required" }) };
     }
 
-    if (password !== process.env.ADMIN_PASSWORD) {
+    if (!safeEqual(password, process.env.ADMIN_PASSWORD)) {
       return { statusCode: 401, headers: CORS, body: JSON.stringify({ error: "Invalid password" }) };
     }
 

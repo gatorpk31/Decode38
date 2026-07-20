@@ -114,14 +114,14 @@
   assert('Back empty = 0%', backMin.rating, 0);
 
   var back20 = Decode38.Ratings.rateBack({
-    back_motion: '45-60 degrees (moderate restriction)',
+    back_motion: 'Limited to about 45-60 degrees',
     back_pain_freq: 'Most days'
   });
   assertRange('Back moderate ROM = 10-30%', back20.rating, 10, 30);
 
   var back40 = Decode38.Ratings.rateBack({
-    back_motion: '15-20 degrees (very restricted)',
-    back_radiculopathy: 'Yes — pain radiates into one or both legs'
+    back_motion: 'Cannot bend forward past 15-20 degrees (severe)',
+    back_radiculopathy: 'Yes — one leg or one arm affected'
   });
   assertRange('Back severe ROM + radiculopathy = 40-50%', back40.rating, 40, 50);
 
@@ -140,7 +140,7 @@
   // 5. SLEEP APNEA
   // ═══════════════════════════════════════════════════════════════
   group('rateSleepApnea()');
-  var saCPAP = Decode38.Ratings.rateSleepApnea({ sa_cpap: 'Yes — I use a CPAP/BiPAP machine' });
+  var saCPAP = Decode38.Ratings.rateSleepApnea({ sa_cpap: 'Yes — prescribed and using CPAP/BiPAP/APAP' });
   assert('Sleep apnea with CPAP = 50%', saCPAP.rating, 50);
 
   var saMin = Decode38.Ratings.rateSleepApnea({});
@@ -154,8 +154,8 @@
   assert('Knee empty = 0%', kneeMin.rating, 0);
 
   var kneeSevere = Decode38.Ratings.rateKnee({
-    knee_flexion: 'Less than 45 degrees (severely limited)',
-    knee_instability: 'Severe — knee gives way frequently, use brace'
+    knee_flexion: 'Less than 30 degrees — severe limitation',
+    knee_instability: 'Severe — buckles with walking, cannot rely on it for weight bearing'
   });
   assertRange('Knee severe = 30-60%', kneeSevere.rating, 30, 60);
 
@@ -164,7 +164,7 @@
   // ═══════════════════════════════════════════════════════════════
   group('rateMigraines()');
   var migSevere = Decode38.Ratings.rateMigraines({
-    mig_prostrating: 'Yes — I have to stop all activity and lie down',
+    mig_prostrating: 'About once a week',
     mig_type: 'More than once a month',
     mig_work: 'Unable to work during migraines — severe economic impact'
   });

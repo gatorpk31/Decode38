@@ -12,8 +12,11 @@ Decode38.Ratings = (function() {
   // ────────────────────────────────────────────────────────────────
   function snapRating(score, valid) {
     if (!valid) valid = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+    // Ties adjust upward per 38 CFR § 4.25 (combined values ending in 5
+    // are adjusted to the next higher multiple of 10). valid[] is ascending,
+    // so <= lets the higher candidate win exact ties.
     return valid.reduce(function(p, c) {
-      return Math.abs(c - score) < Math.abs(p - score) ? c : p;
+      return Math.abs(c - score) <= Math.abs(p - score) ? c : p;
     });
   }
 

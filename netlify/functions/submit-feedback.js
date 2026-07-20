@@ -1,12 +1,9 @@
 const { getBlobStore } = require("./_blobs");
 
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Content-Type": "application/json",
-};
+const { corsHeaders, rateLimitAllow } = require("./_security");
 
 exports.handler = async (event) => {
+  const CORS = corsHeaders(event);
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS, body: "" };
   }
@@ -14,9 +11,20 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers: CORS, body: JSON.stringify({ error: "Method not allowed" }) };
   }
 
+  // 5 submissions per IP per hour — feedback is an unauthenticated write path.
+  const allowed = await rateLimitAllow("feedback", event, 5, 60 * 60 * 1000);
+  if (!allowed) {
+    return { statusCode: 429, headers: CORS, body: JSON.stringify({ error: "Too many submissions. Please try again later." }) };
+  }
+
   try {
     const body = JSON.parse(event.body || "{}");
-    const { name, email, rating, message } = body;
+    const { name, email, rating, message, website } = body;
+
+    // Honeypot: real users never fill this hidden field
+    if (website) {
+      return { statusCode: 200, headers: CORS, body: JSON.stringify({ success: true, message: "Thank you for your feedback!" }) };
+    }
 
     if (!message || message.trim().length < 5) {
       return { statusCode: 400, headers: CORS, body: JSON.stringify({ error: "Message is required (min 5 characters)" }) };

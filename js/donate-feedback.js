@@ -177,7 +177,8 @@ Decode38.DonateFeedback = {
         name: name || 'Anonymous',
         email: email,
         rating: this._selectedRating,
-        message: message
+        message: message,
+        website: (document.getElementById('fbWebsite') || {}).value || ''
       })
     })
       .then(function(r) { return r.json(); })

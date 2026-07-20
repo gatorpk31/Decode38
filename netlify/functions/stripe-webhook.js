@@ -37,11 +37,16 @@ exports.handler = async (event) => {
 
     try {
       const store = getBlobStore("donations");
-      const key = `donation_${Date.now()}_${session.id.slice(-8)}`;
+      // Idempotent key: Stripe retries deliver the same session.id, which
+      // overwrites the same record instead of duplicating it.
+      const key = `donation_${session.id}`;
       await store.setJSON(key, donation);
       console.log("Donation stored:", key, donation.amount);
     } catch (err) {
+      // Return 500 so Stripe retries the webhook — otherwise the donation
+      // record is silently lost while Stripe believes delivery succeeded.
       console.error("Failed to store donation:", err.message);
+      return { statusCode: 500, body: "Storage failure — retry" };
     }
   }
 

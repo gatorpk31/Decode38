@@ -1,12 +1,9 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Content-Type": "application/json",
-};
+const { corsHeaders } = require("./_security");
 
 exports.handler = async (event) => {
+  const CORS = corsHeaders(event);
   if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers: CORS, body: "" };
   }
@@ -60,7 +57,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers: CORS,
-      body: JSON.stringify({ error: "Failed to create checkout session: " + err.message }),
+      body: JSON.stringify({ error: "Failed to create checkout session. Please try again." }),
     };
   }
 };
