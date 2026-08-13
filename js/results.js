@@ -156,11 +156,11 @@ function getAllTranslations(conditions, a) {
     if (a.feet_type && has(a.feet_type, 'Plantar fasciitis')) t.push({ layman:"The bottom of my foot / heel kills me every time I stand up", va:"Plantar fasciitis with chronic heel pain on weight-bearing; characteristic morning pain and tenderness along the plantar fascia; rated under DC 5284 (other foot injuries) based on severity" });
     if (a.feet_type && has(a.feet_type, 'Pes planus')) t.push({ layman:"I have flat feet — the military made it worse", va:"Pes planus (DC 5276) with symptoms of pain on use, swelling on use, or characteristic calluses; mild (0-10%), moderate (10%), or severe (20-30%) based on degree of deformity and symptoms" });
     if (a.feet_type && has(a.feet_type, 'Ankle instability')) t.push({ layman:"My ankle gives out / rolls easily since my service injury", va:"Chronic ankle instability with recurrent sprain and pain on motion; rated under DC 5270-5274 for limitation of motion or DC 5271 for ankle limitation of motion" });
-    if (a.feet_both === 'Yes — bilateral (both sides)') t.push({ layman:"Both of my feet are affected", va:"Bilateral foot condition — each foot is rated separately; bilateral factor applies per 38 CFR § 4.68, adding 10% of the combined value of both ratings to the final combined rating" });
+    if (a.feet_both === 'Yes — bilateral (both sides)') t.push({ layman:"Both of my feet are affected", va:"Bilateral foot condition — each foot is rated separately; bilateral factor applies per 38 CFR § 4.26, adding 10% of the combined value of both ratings to the final combined rating" });
   }
   if (has(conditions, 'hip')) {
     t.push({ layman:"My hip hurts and I can barely lift my leg", va:"Limitation of flexion of the hip — rated under DC 5252 based on degrees of flexion; painful and limited motion with weight-bearing ambulation (38 CFR § 4.40, 4.45)" });
-    if (a.hip_which === 'Both hips') t.push({ layman:"Both of my hips are bad", va:"Bilateral hip conditions — each hip rated separately under DC 5252; bilateral factor applied under 38 CFR § 4.68" });
+    if (a.hip_which === 'Both hips') t.push({ layman:"Both of my hips are bad", va:"Bilateral hip conditions — each hip rated separately under DC 5252; bilateral factor applied under 38 CFR § 4.26" });
     if (a.hip_condition && has(a.hip_condition, 'Avascular necrosis')) t.push({ layman:"The bone in my hip is dying from an injury or medication", va:"Avascular necrosis (osteonecrosis) of the femoral head — rated based on resulting limitation of motion; may be secondary to corticosteroid treatment or traumatic injury during service" });
   }
   if (has(conditions, 'elbow_wrist_hand')) {

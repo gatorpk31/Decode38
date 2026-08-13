@@ -69,6 +69,47 @@
   // ═══════════════════════════════════════════════════════════════
   // 1. SNAP RATING
   // ═══════════════════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════════════════
+  // 0. BILATERAL FACTOR (38 CFR 4.26)
+  // ═══════════════════════════════════════════════════════════════
+  group('Bilateral factor (38 CFR 4.26)');
+
+  var nonBi = Decode38.Ratings.calculateCombinedRating({
+    a: { rating: 20, flags: [] },
+    b: { rating: 20, flags: [] }
+  });
+  assert('Two 20% non-bilateral -> raw 36', nonBi.raw, 36);
+  assert('Two 20% non-bilateral -> combined 40', nonBi.combined, 40);
+  assert('No bilateral info when none flagged', nonBi.bilateral, null);
+
+  var bi = Decode38.Ratings.calculateCombinedRating({
+    knee: { rating: 20, flags: ['bilateral'] }
+  });
+  assert('Bilateral 20% combines both limbs first', bi.bilateral.combinedBeforeFactor, 36);
+  assert('Bilateral 20% after 10% factor', bi.bilateral.combinedAfterFactor, 40);
+  assert('Bilateral 20% final combined = 40', bi.combined, 40);
+
+  var single20 = Decode38.Ratings.calculateCombinedRating({ knee: { rating: 20, flags: [] } });
+  assertTrue('Bilateral 20% exceeds single 20%', bi.raw > single20.raw);
+
+  var mixed = Decode38.Ratings.calculateCombinedRating({
+    knee: { rating: 10, flags: ['bilateral'] },
+    ptsd: { rating: 70, flags: [] }
+  });
+  assertTrue('Bilateral + PTSD raises above 70', mixed.raw > 70);
+  assertTrue('Bilateral + PTSD stays under 100', mixed.raw < 100);
+
+  var none = Decode38.Ratings.calculateCombinedRating({});
+  assert('No conditions -> combined 0', none.combined, 0);
+  var zero = Decode38.Ratings.calculateCombinedRating({ x: { rating: 0, flags: ['bilateral'] } });
+  assert('Zero-rated bilateral ignored', zero.combined, 0);
+
+  var many = Decode38.Ratings.calculateCombinedRating({
+    a: { rating: 70, flags: [] }, b: { rating: 50, flags: ['bilateral'] },
+    c: { rating: 50, flags: [] }, d: { rating: 30, flags: [] }
+  });
+  assertTrue('Combined never exceeds 100', many.raw <= 100);
+
   group('snapRating()');
   assert('0 snaps to 0', Decode38.Ratings.snapRating(0), 0);
   assert('5 snaps to 10', Decode38.Ratings.snapRating(5), 10);

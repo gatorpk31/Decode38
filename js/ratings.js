@@ -132,8 +132,10 @@ Decode38.Ratings = (function() {
     else if (a.knee_flexion === 'About 30-60 degrees') score = Math.max(score, 20);
     else if (a.knee_flexion === 'About 60-90 degrees') score = Math.max(score, 10);
 
+    // Bilateral is NOT a score bump — VA rates each knee separately and
+    // applies the bilateral factor (38 CFR 4.26) at the combination stage.
+    // The 'bilateral' flag below drives that in calculateCombinedRating.
     var bilateral = a.knee_which === 'Both knees';
-    if (bilateral) score = Math.min(score + 10, 60);
 
     return {
       rating: snapRating(score, [0, 10, 20, 30, 40, 60]),
@@ -442,8 +444,8 @@ Decode38.Ratings = (function() {
       score = Math.max(score, 10);
     }
 
+    // Bilateral handled at combination per 38 CFR 4.26 (see flag below).
     var bilateral = a.feet_both === 'Yes — bilateral (both sides)';
-    if (bilateral && score > 0) score += 10;
 
     return {
       rating: snapRating(score, [0, 10, 20, 30]),
@@ -935,8 +937,8 @@ Decode38.Ratings = (function() {
 
     if (a.rad_severity && sevMap[a.rad_severity]) score = sevMap[a.rad_severity];
 
+    // Bilateral handled at combination per 38 CFR 4.26 (see flag below).
     var bilateral = a.rad_location && (a.rad_location.includes('Both legs') || a.rad_location.includes('Both arms'));
-    if (bilateral) score = Math.min(score + 10, 80);
 
     var symptoms = a.rad_symptoms || [];
     if (symptoms.includes('Foot drop (inability to lift front of foot)')) score = Math.max(score, 40);
@@ -1011,34 +1013,71 @@ Decode38.Ratings = (function() {
   // 2. Apply each rating to the remaining "whole person" %
   // 3. Round final combined value to nearest 10%
   // ────────────────────────────────────────────────────────────────
-  function calculateCombinedRating(ratings) {
-    var vals = [];
-    var keys = Object.keys(ratings);
-    for (var i = 0; i < keys.length; i++) {
-      var r = ratings[keys[i]].rating;
-      if (r > 0) vals.push(r);
-    }
-    vals.sort(function(a, b) { return b - a; });
-
-    if (vals.length === 0) return { combined: 0, raw: 0, steps: [] };
-
+  function combineValues(vals) {
+    var sorted = vals.slice().sort(function(a, b) { return b - a; });
     var remaining = 100;
     var steps = [];
-
-    vals.forEach(function(v) {
+    sorted.forEach(function(v) {
       var disabled = remaining * (v / 100);
       steps.push({
-        rating: v,
+        rating: Math.round(v),
         disabled: Math.round(disabled),
         remaining: Math.round(remaining - disabled)
       });
       remaining = remaining - disabled;
     });
+    return { value: 100 - remaining, steps: steps };
+  }
 
-    var raw = 100 - remaining;
-    var combined = Math.round(raw / 10) * 10; // snap to nearest 10%
+  function calculateCombinedRating(ratings) {
+    var bilateralVals = [];
+    var singleVals = [];
 
-    return { combined: combined, raw: Math.round(raw), steps: steps };
+    Object.keys(ratings).forEach(function(k) {
+      var r = ratings[k];
+      if (!r || !r.rating || r.rating <= 0) return;
+      var isBilateral = r.flags && r.flags.indexOf('bilateral') !== -1;
+      if (isBilateral) {
+        // VA rates each extremity of a paired set separately, so a bilateral
+        // finding contributes two evaluations of equal severity.
+        bilateralVals.push(r.rating, r.rating);
+      } else {
+        singleVals.push(r.rating);
+      }
+    });
+
+    if (bilateralVals.length === 0 && singleVals.length === 0) {
+      return { combined: 0, raw: 0, steps: [], bilateral: null };
+    }
+
+    // 38 CFR 4.26 — bilateral factor: combine the paired-extremity ratings,
+    // then add 10% of that combined value before combining with everything
+    // else. Skipping this understates every veteran with bilateral knees,
+    // feet, hips, or radiculopathy.
+    var bilateralInfo = null;
+    var listToCombine = singleVals.slice();
+
+    if (bilateralVals.length > 0) {
+      var bc = combineValues(bilateralVals).value;
+      var withFactor = bc + bc * 0.10;
+      bilateralInfo = {
+        ratings: bilateralVals.slice(),
+        combinedBeforeFactor: Math.round(bc),
+        factorAdded: Math.round(bc * 0.10 * 10) / 10,
+        combinedAfterFactor: Math.round(withFactor)
+      };
+      listToCombine.push(withFactor);
+    }
+
+    var result = combineValues(listToCombine);
+    var raw = result.value;
+
+    return {
+      combined: Math.round(raw / 10) * 10, // snap to nearest 10%
+      raw: Math.round(raw),
+      steps: result.steps,
+      bilateral: bilateralInfo
+    };
   }
 
   // ────────────────────────────────────────────────────────────────
@@ -1048,6 +1087,7 @@ Decode38.Ratings = (function() {
     snapRating:             snapRating,
     calculateAllRatings:    calculateAllRatings,
     calculateCombinedRating: calculateCombinedRating,
+    combineValues:          combineValues,
 
     // Individual rate functions exposed for direct access / testing
     ratePTSD:              ratePTSD,
