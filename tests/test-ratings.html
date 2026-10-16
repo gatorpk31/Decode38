@@ -110,6 +110,65 @@
   });
   assertTrue('Combined never exceeds 100', many.raw <= 100);
 
+  // ═══════════════════════════════════════════════════════════════
+  // 0b. SCHEDULAR LEVEL CORRECTNESS (38 CFR)
+  // Each diagnostic code may only return percentages that code actually
+  // provides. Returning an unassignable level misleads the veteran.
+  // ═══════════════════════════════════════════════════════════════
+  group('Schedular levels per 38 CFR');
+
+  // DC 5276 builds laterality into its own criteria: pronounced is 50%
+  // bilateral / 30% unilateral, severe is 30% / 20%.
+  var feetBiPron = Decode38.Ratings.rateFeet({
+    feet_severity: 'Severe — unable to walk more than short distances, requires assistive device',
+    feet_both: 'Yes — bilateral (both sides)'
+  });
+  assert('Flatfoot pronounced bilateral = 50%', feetBiPron.rating, 50);
+
+  var feetUniPron = Decode38.Ratings.rateFeet({
+    feet_severity: 'Severe — unable to walk more than short distances, requires assistive device'
+  });
+  assert('Flatfoot pronounced unilateral = 30%', feetUniPron.rating, 30);
+
+  var feetBiSev = Decode38.Ratings.rateFeet({
+    feet_severity: 'Moderate-severe — significantly limits standing, walking, and physical activity',
+    feet_both: 'Yes — bilateral (both sides)'
+  });
+  assert('Flatfoot severe bilateral = 30%', feetBiSev.rating, 30);
+
+  var feetUniSev = Decode38.Ratings.rateFeet({
+    feet_severity: 'Moderate-severe — significantly limits standing, walking, and physical activity'
+  });
+  assert('Flatfoot severe unilateral = 20%', feetUniSev.rating, 20);
+
+  // 5276 must NOT also take the 4.26 bilateral factor — laterality is already
+  // in the percentage, so flagging it would double-count.
+  assert('Flatfoot does not set the bilateral flag', feetBiPron.flags.length, 0);
+
+  // DC 7122 provides 10 / 20 / 30 only; 30 is the maximum per extremity.
+  var coldSevere = Decode38.Ratings.rateColdInjury({
+    cold_severity: 'Severe — major tissue loss or complete loss of sensation'
+  });
+  assert('Cold injury severe caps at 30% (not 40)', coldSevere.rating, 30);
+  assertTrue('Cold injury never exceeds 30%', coldSevere.rating <= 30);
+
+  // DC 8520 provides 10 / 20 / 40 / 60 / 80 — there is no 30% level.
+  var radValid = [0, 10, 20, 40, 60, 80];
+  var radSevere = Decode38.Ratings.rateRadiculopathy({
+    rad_severity: 'Severe — constant pain, significant weakness or numbness',
+    rad_location: 'Both legs'
+  });
+  assertTrue('Radiculopathy returns only valid 8520 levels', radValid.indexOf(radSevere.rating) > -1);
+
+  // DC 5235-5243 general formula: 10/20/30/40/50/100 — there is no 60% level.
+  var backValid = [0, 10, 20, 30, 40, 50, 100];
+  var backSevere = Decode38.Ratings.rateBack({
+    back_motion: 'Cannot bend forward past 15-20 degrees (severe)',
+    back_radiculopathy: 'Yes — both legs/arms affected (bilateral)',
+    back_work: 'Cannot perform any physical work'
+  });
+  assertTrue('Back returns only valid spine-formula levels', backValid.indexOf(backSevere.rating) > -1);
+
   group('snapRating()');
   assert('0 snaps to 0', Decode38.Ratings.snapRating(0), 0);
   assert('5 snaps to 10', Decode38.Ratings.snapRating(5), 10);

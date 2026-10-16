@@ -98,7 +98,7 @@ Decode38.Ratings = (function() {
     if (a.back_flareup === 'Yes — frequent severe flare-ups (weekly)') score = Math.max(score, 30);
 
     return {
-      rating: snapRating(score, [0, 10, 20, 30, 40, 50, 60, 100]),
+      rating: snapRating(score, [0, 10, 20, 30, 40, 50, 100]),
       score: score,
       flags: [],
       tdiuFlag: score >= 40,
@@ -433,8 +433,16 @@ Decode38.Ratings = (function() {
   function rateFeet(a) {
     var score = 0;
 
-    if (a.feet_severity === 'Severe — unable to walk more than short distances, requires assistive device') score = 30;
-    else if (a.feet_severity === 'Moderate-severe — significantly limits standing, walking, and physical activity') score = 20;
+    // DC 5276 builds laterality into its OWN criteria — pronounced is 50%
+    // bilateral / 30% unilateral, severe is 30% / 20%. So the bilateral case is
+    // a higher percentage straight from the code, and the 38 CFR 4.26 bilateral
+    // factor must NOT also be applied (that would double-count). Contrast the
+    // knee and radiculopathy codes, which rate each extremity separately and do
+    // take the 4.26 factor.
+    var feetBilateral = a.feet_both === 'Yes — bilateral (both sides)';
+
+    if (a.feet_severity === 'Severe — unable to walk more than short distances, requires assistive device') score = feetBilateral ? 50 : 30;
+    else if (a.feet_severity === 'Moderate-severe — significantly limits standing, walking, and physical activity') score = feetBilateral ? 30 : 20;
     else if (a.feet_severity === 'Moderate — noticeable limitation, requires orthotics or bracing') score = 10;
     else if (a.feet_severity === 'Mild — some pain and limitation but functional') score = 10;
 
@@ -444,21 +452,19 @@ Decode38.Ratings = (function() {
       score = Math.max(score, 10);
     }
 
-    // Bilateral handled at combination per 38 CFR 4.26 (see flag below).
-    var bilateral = a.feet_both === 'Yes — bilateral (both sides)';
-
     return {
-      rating: snapRating(score, [0, 10, 20, 30]),
+      rating: snapRating(score, [0, 10, 20, 30, 50]),
       score: score,
-      flags: bilateral ? ['bilateral'] : [],
-      tdiuFlag: false,
+      flags: [],
+      tdiuFlag: score >= 50,
       dc: '5276',
       name: 'Feet / Ankles',
       ratingDescriptions: {
         0:  'No significant functional impairment.',
         10: 'Mild symptoms; managed with orthotics.',
-        20: 'Moderate — weight-bearing painful; requires orthopedic footwear.',
-        30: 'Marked — use of crutch or cane required.'
+        20: 'Severe, one foot — marked deformity, pain on manipulation, swelling on use.',
+        30: 'Severe both feet, or pronounced one foot — marked pronation, extreme tenderness.',
+        50: 'Pronounced both feet — marked pronation, extreme tenderness of plantar surfaces, not improved by orthopedic shoes or appliances.'
       }
     };
   }
@@ -896,7 +902,11 @@ Decode38.Ratings = (function() {
     var score = 0;
     var residuals = a.cold_residuals || [];
 
-    if (a.cold_severity === 'Severe — major tissue loss or complete loss of sensation') score = 40;
+    // DC 7122 provides 10 / 20 / 30 only; 30 is the schedular maximum per
+    // affected extremity. The severe case tops out there — the additional
+    // compensation comes from separately rated complications (see note below),
+    // not from a higher 7122 evaluation.
+    if (a.cold_severity === 'Severe — major tissue loss or complete loss of sensation') score = 30;
     else if (a.cold_severity === 'Moderate — significant ongoing symptoms affecting daily function') score = 20;
     else if (a.cold_severity === 'Mild — noticeable but not significantly limiting') score = 10;
     else if (a.cold_severity === 'Minimal — occasional symptoms only') score = 10;
@@ -905,13 +915,13 @@ Decode38.Ratings = (function() {
     if (residuals.includes('Tissue loss at tip of finger or toe')) score = Math.max(score, 30);
 
     return {
-      rating: snapRating(score, [0, 10, 20, 30, 40]),
+      rating: snapRating(score, [0, 10, 20, 30]),
       score: score,
       flags: [],
       tdiuFlag: false,
       name: 'Cold Injuries / Frostbite',
       dc: '7122',
-      note: 'Cold injury residuals are commonly under-claimed. Even if the original injury was not formally documented, current symptoms combined with evidence of cold weather service can establish the nexus.',
+      note: 'Cold injury residuals are commonly under-claimed. Even if the original injury was not formally documented, current symptoms combined with evidence of cold weather service can establish the nexus. 30% is the maximum under DC 7122 for each affected part, and each hand or foot is rated separately. Amputations, peripheral neuropathy, and squamous cell carcinoma at a cold injury scar are rated separately under their own codes on top of this \u2014 which is where higher combined compensation comes from.',
       ratingDescriptions: {
         0:  'No compensable residuals.',
         10: 'Mild residuals — occasional symptoms.',
@@ -945,7 +955,7 @@ Decode38.Ratings = (function() {
     if (symptoms.includes('Muscle atrophy — visible shrinking of muscle')) score = Math.max(score, 40);
 
     return {
-      rating: snapRating(score, [0, 10, 20, 30, 40, 60, 80]),
+      rating: snapRating(score, [0, 10, 20, 40, 60, 80]),
       score: score,
       flags: bilateral ? ['bilateral'] : [],
       tdiuFlag: score >= 60,
