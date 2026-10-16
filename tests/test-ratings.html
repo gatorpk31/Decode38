@@ -169,6 +169,72 @@
   });
   assertTrue('Back returns only valid spine-formula levels', backValid.indexOf(backSevere.rating) > -1);
 
+  // ═══════════════════════════════════════════════════════════════
+  // 0c. PREVIOUSLY UNREACHABLE LEVELS
+  // Each of these percentages was listed as a possible result but no
+  // question could produce it, so veterans meeting the criteria were
+  // shown a lower rating than the code provides.
+  // ═══════════════════════════════════════════════════════════════
+  group('Unreachable levels now reachable');
+
+  // 38 CFR 4.130 — 100% total occupational and social impairment
+  var ptsdTotal = Decode38.Ratings.ratePTSD({ ptsd_total: ['Persistent danger of hurting myself or others'] });
+  assert('PTSD can reach 100%', ptsdTotal.rating, 100);
+  var ptsdNone = Decode38.Ratings.ratePTSD({ ptsd_total: ['None of these apply'] });
+  assertTrue('PTSD "none of these" does not trigger 100%', ptsdNone.rating < 100);
+
+  var mhTotal = Decode38.Ratings.rateMentalHealth({ mh_total: ['Persistent danger of hurting myself or others'] });
+  assert('Mental health can reach 100%', mhTotal.rating, 100);
+
+  // MST is rated under the same formula as PTSD and must reach the same levels
+  var mstUnemployable = Decode38.Ratings.rateMST({
+    mst_conditions: ['PTSD / trauma symptoms'],
+    mst_employment: 'Unable to work at all due to MST-related conditions'
+  });
+  assert('MST unemployable = 70%', mstUnemployable.rating, 70);
+  assertTrue('MST unemployable flags TDIU', mstUnemployable.tdiuFlag);
+
+  var mstSuicidal = Decode38.Ratings.rateMST({
+    mst_conditions: ['Major depression'],
+    mst_suicidal: 'Yes — I have had these thoughts'
+  });
+  assert('MST suicidal ideation = 70%', mstSuicidal.rating, 70);
+
+  var mstTotal = Decode38.Ratings.rateMST({
+    mst_conditions: ['PTSD / trauma symptoms'],
+    mst_total: ['Persistent danger of hurting myself or others']
+  });
+  assert('MST can reach 100%', mstTotal.rating, 100);
+
+  // MST and PTSD must not diverge for equivalent severity
+  var ptsdUnemployable = Decode38.Ratings.ratePTSD({ ptsd_employment: 'Unable to work at all due to PTSD' });
+  assert('MST and PTSD agree when both are unemployable', mstUnemployable.rating, ptsdUnemployable.rating);
+
+  // DC 5237 cervical: unfavorable ankylosis 40%, entire spine 100%
+  var neck40 = Decode38.Ratings.rateNeck({ neck_ankylosis: 'Yes — entire neck fused/fixed in a bent or twisted position (40% level)' });
+  assert('Cervical unfavorable ankylosis = 40%', neck40.rating, 40);
+  var neck100 = Decode38.Ratings.rateNeck({ neck_ankylosis: 'Yes — entire spine is fused/fixed, neck and back (100% level)' });
+  assert('Entire spine ankylosis = 100%', neck100.rating, 100);
+  var neck30 = Decode38.Ratings.rateNeck({ neck_ankylosis: 'Yes — entire neck fused but in a straight/neutral position (30% level)' });
+  assert('Cervical favorable ankylosis = 30%', neck30.rating, 30);
+
+  // DC 7122 rates each part separately, so a pair takes the 4.26 factor
+  var coldBi = Decode38.Ratings.rateColdInjury({
+    cold_severity: 'Severe — major tissue loss or complete loss of sensation',
+    cold_laterality: 'Both feet'
+  });
+  assertTrue('Bilateral cold injury sets the bilateral flag', coldBi.flags.indexOf('bilateral') > -1);
+  var coldUni = Decode38.Ratings.rateColdInjury({
+    cold_severity: 'Severe — major tissue loss or complete loss of sensation',
+    cold_laterality: 'One foot only'
+  });
+  assert('Unilateral cold injury does not set the flag', coldUni.flags.length, 0);
+
+  // End to end: the flag must actually raise the combined rating
+  var coldCombinedBi = Decode38.Ratings.calculateCombinedRating({ cold: coldBi });
+  var coldCombinedUni = Decode38.Ratings.calculateCombinedRating({ cold: coldUni });
+  assertTrue('Bilateral cold injury combines higher than unilateral', coldCombinedBi.raw > coldCombinedUni.raw);
+
   group('snapRating()');
   assert('0 snaps to 0', Decode38.Ratings.snapRating(0), 0);
   assert('5 snaps to 10', Decode38.Ratings.snapRating(5), 10);

@@ -20,6 +20,16 @@ Decode38.Ratings = (function() {
     });
   }
 
+  // 38 CFR 4.130 General Rating Formula for Mental Disorders — 100% requires
+  // total occupational and social impairment. All three mental-health modules
+  // (PTSD, general mental health, MST) listed 100% as a possible outcome but
+  // had no question that could reach it, so a veteran meeting these criteria
+  // was shown 70%.
+  function _totalMentalImpairment(selected) {
+    var list = Array.isArray(selected) ? selected : [];
+    return list.some(function(v) { return v.indexOf('None of these') === -1; });
+  }
+
   // ────────────────────────────────────────────────────────────────
   // 1. PTSD (DC 9411)
   // ────────────────────────────────────────────────────────────────
@@ -27,6 +37,7 @@ Decode38.Ratings = (function() {
     var score = 0;
     var flags = [];
 
+    if (_totalMentalImpairment(a.ptsd_total)) { score = Math.max(score, 100); flags.push('total_impairment'); }
     if (a.ptsd_suicidal === 'Yes — I have had these thoughts') { score = Math.max(score, 70); flags.push('suicidal'); }
     if (a.ptsd_panic === 'Daily or near-daily') { score = Math.max(score, 70); flags.push('panic_daily'); }
     else if (a.ptsd_panic === 'More than once a week') { score = Math.max(score, 50); flags.push('panic_weekly'); }
@@ -556,21 +567,30 @@ Decode38.Ratings = (function() {
     };
 
     if (a.neck_flexion && flexMap[a.neck_flexion] !== undefined) score = Math.max(score, flexMap[a.neck_flexion]);
+    // 38 CFR 4.71a: unfavorable ankylosis of the entire cervical spine rates
+    // 40%, and of the entire spine 100%. Favorable (neutral) fixation is 30%.
+    // Without these the module could never exceed 30%, under-rating fused necks.
+    if (a.neck_ankylosis === 'Yes — entire spine is fused/fixed, neck and back (100% level)') score = Math.max(score, 100);
+    else if (a.neck_ankylosis === 'Yes — entire neck fused/fixed in a bent or twisted position (40% level)') score = Math.max(score, 40);
+    else if (a.neck_ankylosis === 'Yes — entire neck fused but in a straight/neutral position (30% level)') score = Math.max(score, 30);
+
     if (a.neck_radiculopathy && a.neck_radiculopathy.includes('bilateral')) score = Math.max(score, 20);
     if (a.neck_work && a.neck_work.includes('Cannot perform any work')) score = Math.max(score, 30);
 
     return {
-      rating: snapRating(score, [0, 10, 20, 30]),
+      rating: snapRating(score, [0, 10, 20, 30, 40, 100]),
       score: score,
       flags: [],
-      tdiuFlag: score >= 30,
+      tdiuFlag: score >= 40,
       name: 'Neck (Cervical Spine)',
       dc: '5237',
       ratingDescriptions: {
         0:  'No compensable limitation.',
         10: 'Forward flexion greater than 30 degrees but not greater than 40 degrees.',
         20: 'Forward flexion of 15-30 degrees.',
-        30: 'Unfavorable ankylosis or forward flexion of 0-15 degrees.'
+        30: 'Forward flexion 15 degrees or less; or FAVORABLE ankylosis (fused in a neutral position) of the entire cervical spine.',
+        40: 'UNFAVORABLE ankylosis of the entire cervical spine (fused in a bent or twisted position).',
+        100: 'Unfavorable ankylosis of the entire spine.'
       }
     };
   }
@@ -583,6 +603,7 @@ Decode38.Ratings = (function() {
     var flags = [];
 
     if (a.mh_suicidal === 'Yes — I have had these thoughts') { score = Math.max(score, 70); flags.push('suicidal'); }
+    if (_totalMentalImpairment(a.mh_total)) score = Math.max(score, 100);
     if (a.mh_employment === 'Unable to work at all') { score = Math.max(score, 70); flags.push('unemployable'); }
     if (a.mh_employment === 'Significant impairment — missed work, job loss, performance issues') score = Math.max(score, 50);
     if (a.mh_social === 'Severe — isolated, no meaningful relationships maintained') score = Math.max(score, 70);
@@ -619,17 +640,39 @@ Decode38.Ratings = (function() {
     var score = 0;
     var conditions = a.mst_conditions || [];
 
+    var mstFlags = ['mst'];
+
     if (conditions.includes('PTSD / trauma symptoms')) score = Math.max(score, 50);
     if (conditions.includes('Major depression')) score = Math.max(score, 30);
     if (conditions.includes('Anxiety disorder')) score = Math.max(score, 30);
     if (conditions.length >= 4) score = Math.max(score, 50);
+
+    // MST-related conditions are rated under the same General Rating Formula
+    // for Mental Disorders as PTSD, so the same 70% and 100% criteria apply.
+    // Previously this module asked only WHICH conditions resulted and never
+    // how disabling they are, capping every MST claimant at 50%.
+    if (a.mst_employment === 'Unable to work at all due to MST-related conditions') {
+      score = Math.max(score, 70);
+      mstFlags.push('unemployable');
+    } else if (a.mst_employment === 'Significant impairment — missed work, job loss, performance issues') {
+      score = Math.max(score, 50);
+    }
+    if (a.mst_suicidal === 'Yes — I have had these thoughts') {
+      score = Math.max(score, 70);
+      mstFlags.push('suicidal');
+    }
+    if (_totalMentalImpairment(a.mst_total)) {
+      score = Math.max(score, 100);
+      mstFlags.push('total_impairment');
+    }
+
     if (score < 10 && conditions.length > 0) score = 10;
 
     return {
-      rating: snapRating(score, [0, 10, 30, 50, 70]),
+      rating: snapRating(score, [0, 10, 30, 50, 70, 100]),
       score: score,
-      flags: ['mst'],
-      tdiuFlag: score >= 70,
+      flags: mstFlags,
+      tdiuFlag: mstFlags.indexOf('unemployable') !== -1 || score >= 70,
       name: 'Military Sexual Trauma',
       dc: '9411/9434',
       note: 'MST is the in-service event. This estimate is based on resulting conditions you reported. A thorough evaluation by a VA MST Coordinator will produce a more precise compensation level. Ask your VA facility for the MST Coordinator specifically.',
@@ -638,7 +681,8 @@ Decode38.Ratings = (function() {
         10: 'Mild resulting conditions — occupational and social impairment due to mild symptoms.',
         30: 'Moderate resulting conditions.',
         50: 'Significant resulting conditions — reduced reliability and productivity.',
-        70: 'Severe resulting conditions — deficiencies in most life areas.'
+        70: 'Severe resulting conditions — deficiencies in most life areas.',
+        100: 'Total occupational and social impairment from MST-related conditions.'
       }
     };
   }
@@ -914,10 +958,18 @@ Decode38.Ratings = (function() {
     if (residuals.includes('Raynaud\'s phenomenon — exaggerated cold/color response')) score = Math.max(score, 20);
     if (residuals.includes('Tissue loss at tip of finger or toe')) score = Math.max(score, 30);
 
+    // DC 7122 rates each affected hand or foot separately, so when both members
+    // of a pair are involved the bilateral factor (38 CFR 4.26) applies. Unlike
+    // DC 5276 flatfoot, laterality is NOT built into 7122's percentages, so
+    // applying the factor here is correct.
+    var coldBilateral = a.cold_laterality === 'Both feet'
+      || a.cold_laterality === 'Both hands'
+      || a.cold_laterality === 'Both feet and both hands';
+
     return {
       rating: snapRating(score, [0, 10, 20, 30]),
       score: score,
-      flags: [],
+      flags: coldBilateral ? ['bilateral'] : [],
       tdiuFlag: false,
       name: 'Cold Injuries / Frostbite',
       dc: '7122',
